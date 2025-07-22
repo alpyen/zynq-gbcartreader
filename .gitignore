@@ -1,0 +1,16 @@
+# KiCad - only track the project, schematics, pcb file and symbol libraries
+kicad/**
+!kicad/**/
+!kicad/**/*.kicad_pcb
+!kicad/**/*.kicad_sch
+!kicad/**/*.kicad_pro
+!kicad/**/*.kicad_sym
+!kicad/**/*sym-lib-table
+
+# Visual Studio Code - do not track workspace settings
+.vscode/**
+git 
+
+# Python - do not track virtual environments
+**/.venv
+**/__pycache__
