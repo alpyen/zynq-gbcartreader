@@ -3491,6 +3491,16 @@
 		)
 		(uuid "79f49280-0445-4ffa-aee4-9d2bc89c3400")
 	)
+	(text "Pin 3/4 are FPGA GND\nPin 1/2 are FPGA 3V3"
+		(exclude_from_sim no)
+		(at 41.91 33.02 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "948dee97-382f-4751-8b57-4a23e17113b7")
+	)
 	(text "~{RES}"
 		(exclude_from_sim no)
 		(at 248.92 121.92 0)
@@ -3504,7 +3514,7 @@
 	)
 	(text "DATA_OUT: FPGA->Cart\nDATA_IN: Cart->FPGA"
 		(exclude_from_sim no)
-		(at 40.64 27.94 0)
+		(at 41.91 88.9 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3735,8 +3745,20 @@
 		(uuid "f8cf7121-3361-4a07-9321-b50b16c1ad81")
 	)
 	(no_connect
+		(at 35.56 55.88)
+		(uuid "1e3f6eb6-fabf-4b6f-bb12-71b3a5c996e7")
+	)
+	(no_connect
 		(at 139.7 137.16)
 		(uuid "24c8bce8-f6cf-4f12-94b9-6752a2275931")
+	)
+	(no_connect
+		(at 35.56 81.28)
+		(uuid "52a83433-faef-43aa-9005-c07ff95cb432")
+	)
+	(no_connect
+		(at 48.26 81.28)
+		(uuid "5cb1c428-7d08-4b8f-9ff1-4acc63df317c")
 	)
 	(no_connect
 		(at 142.24 73.66)
@@ -3757,6 +3779,10 @@
 	(no_connect
 		(at 48.26 45.72)
 		(uuid "bf0b334e-9f1f-4898-a6ea-03ca6bb4dfc6")
+	)
+	(no_connect
+		(at 48.26 55.88)
+		(uuid "c021f663-d30a-4f87-a88b-6019126d37de")
 	)
 	(no_connect
 		(at 142.24 76.2)
@@ -4510,6 +4536,16 @@
 	)
 	(wire
 		(pts
+			(xy 50.8 78.74) (xy 48.26 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "86612a46-408f-4ae4-a49a-89db2e9be6e3")
+	)
+	(wire
+		(pts
 			(xy 104.14 48.26) (xy 106.68 48.26)
 		)
 		(stroke
@@ -4697,6 +4733,16 @@
 			(type default)
 		)
 		(uuid "a5cd4e5e-622f-49e6-9a68-5fa8380b0c55")
+	)
+	(wire
+		(pts
+			(xy 50.8 53.34) (xy 48.26 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a5efda33-8bd1-4736-ba0b-9885b8fe73f2")
 	)
 	(wire
 		(pts
@@ -5027,6 +5073,26 @@
 			(type default)
 		)
 		(uuid "ef6d564f-d463-41a8-9968-6a677f189400")
+	)
+	(wire
+		(pts
+			(xy 33.02 78.74) (xy 35.56 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eff3ea95-a549-4a29-a65f-6cde6b2ae16d")
+	)
+	(wire
+		(pts
+			(xy 33.02 53.34) (xy 35.56 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f00fbd1d-4829-438e-b9b1-57ee3dd1ebf2")
 	)
 	(wire
 		(pts
@@ -5852,28 +5918,6 @@
 			)
 		)
 	)
-	(global_label "FPGA_3V3"
-		(shape input)
-		(at 35.56 81.28 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "09fb4e17-7faf-4f9e-ae89-d5d8f3d8af92")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 23.3824 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "DATA_IN_SDATA_out"
 		(shape input)
 		(at 149.86 187.96 0)
@@ -5980,28 +6024,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "FPGA_GND"
-		(shape input)
-		(at 48.26 78.74 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "3d2e89a2-778b-485b-a794-e2220e7173b3")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 60.8005 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
@@ -6160,50 +6182,6 @@
 			)
 		)
 	)
-	(global_label "FPGA_3V3"
-		(shape input)
-		(at 48.26 55.88 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "7dbf67e3-5306-4c5f-8e31-53c75a6e893e")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 60.4376 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "FPGA_GND"
-		(shape input)
-		(at 35.56 53.34 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "81678bfb-4cb1-4876-be5c-9e7dc781580d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 23.0195 53.34 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "DATA_OUT_SDATA_in"
 		(shape input)
 		(at 43.18 114.3 180)
@@ -6222,28 +6200,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "FPGA_3V3"
-		(shape input)
-		(at 48.26 81.28 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "a9e30a57-2917-49d5-a38c-845cff4597ad")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 60.4376 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
@@ -6314,28 +6270,6 @@
 			)
 		)
 	)
-	(global_label "FPGA_3V3"
-		(shape input)
-		(at 35.56 55.88 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "c8ecc945-1141-480c-b450-ffa1de34b2b0")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 23.3824 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "DATA_OUT_SRCLK_in"
 		(shape input)
 		(at 43.18 119.38 180)
@@ -6376,28 +6310,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "FPGA_GND"
-		(shape input)
-		(at 48.26 53.34 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "e73cf28d-069e-4e46-8e40-3e8b3c54c00f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 60.8005 53.34 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
@@ -6525,28 +6437,6 @@
 		(uuid "fd390a49-140f-472a-9689-7a80ec3607ba")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 81.8629 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "FPGA_GND"
-		(shape input)
-		(at 35.56 78.74 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "ff4af2c8-dcb2-401f-99c3-3d208ad8fb4f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 23.0195 78.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6958,6 +6848,72 @@
 			(project "pmod-interface-board"
 				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
 					(reference "#PWR015")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 33.02 53.34 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1e0b2c00-bd1e-4d02-949f-9bf3e5a41af3")
+		(property "Reference" "#PWR040"
+			(at 33.02 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 33.02 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 33.02 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 33.02 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 33.02 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4d2f0699-93cd-4853-977d-2d7faeded73c")
+		)
+		(instances
+			(project "pmod-interface-board"
+				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)
@@ -8152,6 +8108,72 @@
 	)
 	(symbol
 		(lib_id "power:GND")
+		(at 50.8 53.34 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6ab0590a-78e0-4f5a-bac8-9f9893520b8a")
+		(property "Reference" "#PWR039"
+			(at 50.8 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 50.8 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 50.8 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 50.8 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 50.8 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f4487e7d-7d27-41e8-afd6-d7a97a09221c")
+		)
+		(instances
+			(project "pmod-interface-board"
+				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
+					(reference "#PWR039")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
 		(at 121.92 50.8 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -8593,6 +8615,72 @@
 			(project "pmod-interface-board"
 				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
 					(reference "U6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 50.8 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "78de2b36-2ebf-4b76-9161-bb3ae56a3f1f")
+		(property "Reference" "#PWR042"
+			(at 50.8 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 50.8 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 50.8 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 50.8 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 50.8 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "171dcae5-d06c-46cc-be35-20b266289bce")
+		)
+		(instances
+			(project "pmod-interface-board"
+				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
@@ -10369,7 +10457,7 @@
 		(dnp no)
 		(uuid "c30c3d8b-8e47-4c67-b23f-c6559709d948")
 		(property "Reference" "J1"
-			(at 41.91 62.23 0)
+			(at 41.91 36.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10377,7 +10465,7 @@
 			)
 		)
 		(property "Value" "PMOD Connector 1"
-			(at 41.91 59.69 0)
+			(at 41.91 39.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10735,7 +10823,7 @@
 		(dnp no)
 		(uuid "d7052359-a49e-44c6-8965-571b33ac3252")
 		(property "Reference" "J2"
-			(at 41.91 87.63 0)
+			(at 41.91 62.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10743,7 +10831,7 @@
 			)
 		)
 		(property "Value" "PMOD Connector 2"
-			(at 41.91 85.09 0)
+			(at 41.91 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11017,6 +11105,72 @@
 			(project "pmod-interface-board"
 				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
 					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 33.02 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dee902f5-37b1-4ea2-ba87-fce4e67e9ba4")
+		(property "Reference" "#PWR041"
+			(at 33.02 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 33.02 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 33.02 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 33.02 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 33.02 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "53e708fb-72d6-4c43-ad07-6b9f3ebaa9b2")
+		)
+		(instances
+			(project "pmod-interface-board"
+				(path "/1f17f766-089f-459e-bc24-6d6b623174e2"
+					(reference "#PWR041")
 					(unit 1)
 				)
 			)
