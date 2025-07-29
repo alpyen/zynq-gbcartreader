@@ -1,11 +1,13 @@
-# KiCad - only track the project, schematics, pcb file and symbol libraries
+# KiCad - only track the project, schematics, pcb file and symbol/footprint libraries
 kicad/**
 !kicad/**/
 !kicad/**/*.kicad_pcb
 !kicad/**/*.kicad_sch
 !kicad/**/*.kicad_pro
 !kicad/**/*.kicad_sym
-!kicad/**/*sym-lib-table
+!kicad/**/sym-lib-table
+!kicad/**/fp-lib-table
+!kicad/**/*.pretty/*
 
 # Visual Studio Code - do not track workspace settings
 .vscode/**
