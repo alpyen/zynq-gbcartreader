@@ -8773,7 +8773,7 @@
 				)
 			)
 		)
-		(property "Value" "1K"
+		(property "Value" "200R"
 			(at 151.13 182.88 90)
 			(effects
 				(font
@@ -9617,7 +9617,7 @@
 				)
 			)
 		)
-		(property "Value" "510R"
+		(property "Value" "100R"
 			(at 143.51 182.88 90)
 			(effects
 				(font
