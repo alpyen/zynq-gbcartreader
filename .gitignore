@@ -9,6 +9,13 @@ kicad/**
 !kicad/**/fp-lib-table
 !kicad/**/*.pretty/*
 
+# Vivado - only track the project tcl and block designs
+vivado/**
+!vivado/*.tcl
+bd/**
+!bd/*/
+!bd/*/*.bd
+
 # Visual Studio Code - do not track workspace settings
 .vscode/**
 git 
