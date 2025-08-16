@@ -16,6 +16,10 @@ bd/**
 !bd/*/
 !bd/*/*.bd
 
+# Vitis - only track the regenerate.py script
+vitis/**
+!vitis/regenerate.py
+
 # Visual Studio Code - do not track workspace settings
 .vscode/**
 git 
