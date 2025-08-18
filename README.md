@@ -1,3 +1,7 @@
+
+### Note: This project is a work in progress and is being actively developed.
+___
+
 # ZYNQ GBCartReader - Read & Write GameBoy cartridges
 
 This project is aimed to dive into FPGA SoCs and embedded software development
