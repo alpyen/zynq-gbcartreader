@@ -23,6 +23,7 @@ def print_info(message: str):
 def print_success(message: str):
     print("\033[92m" + f"[regenerate.py] Info: {message}" + "\033[0m")
 
+# Sanity check: Is this script being executed from the Vitis python interface?
 try:
     import vitis
 except ModuleNotFoundError:
@@ -39,7 +40,6 @@ if pathlib.Path(".").absolute().name != "vitis":
         "Change into vitis subfolder first. Exiting!"
     )
 
-
 # Sanity check: Were the XSA files exported properly?
 xsa_exist = True
 xsa_files = ["sw_impl_wrapper.xsa"]
@@ -49,9 +49,9 @@ for xsa in xsa_files:
         xsa_exist = False
 
 if not xsa_exist:
-    print_error("One or more XSA files were not found. Exiting regenerate.py!")
+    print_error("One or more XSA files were not found. Exiting!")
     exit(0)
-        
+
 # -----------------------------------------------------------------------------
 
 # Delete all temporary workspace files as we will regenerate it from this script
@@ -73,7 +73,7 @@ for path in paths:
 # -----------------------------------------------------------------------------
 
 # Regenerate project (commands from workspace journal)
-print_info("Regenerating project with Vitis CLI.")
+print_info("Regenerating projects with Vitis CLI.")
 
 client = vitis.create_client()
 
@@ -94,16 +94,19 @@ sw_impl_platform = client.create_platform_component(
 )
 
 sw_impl_app = client.create_app_component(
-    name="sw_impl_app",
+    name = "sw_impl_app",
     platform = "$COMPONENT_LOCATION/../sw_impl_platform/export/sw_impl_platform/sw_impl_platform.xpfm",
     domain = "standalone_ps7_cortexa9_0"
 )
 
+# -----------------------------------------------------------------------------
+
 # Link sources that are located outside the workspace directory
 print_info("Linking sources outside the workspace to the applications.")
 
-sw_impl_app.import_files("../src/sw_impl", ["main.cpp"], is_skip_copy_sources=True)
+sw_impl_app.import_files("../src/sw_impl", ["*.cpp"], is_skip_copy_sources=True)
+sw_impl_app.import_files("../src", ["*.cpp"], is_skip_copy_sources=True)
 
-print_success("Regeneration script is done. You can start Vitis and set the vitis subfolder as the workspace.")
+print_success("Regeneration complete. You can start Vitis and set the vitis subfolder as the workspace.")
 
 vitis.dispose()
