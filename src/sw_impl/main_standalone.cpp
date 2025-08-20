@@ -9,18 +9,12 @@
 
 #include <string.h>
 
-
 int main()
 {
     xil_printf("Hello, world! from my GBCartReader Application!\r\n");
 
-    XGpio gpio;
-
-    if (XGpio_Initialize(&gpio, XPAR_AXI_PMOD_GPIO_BASEADDR) != XST_SUCCESS)
-        die("XGpio_Initialize failed on AXI PMOD IP core.\r\n");
-    
-    init_port_direction(&gpio);
-    xil_printf("PMOD GPIO pins in/out direction set.\r\n");
+    if (init_pmod(XPAR_AXI_PMOD_GPIO_BASEADDR) != XST_SUCCESS)
+        die("PMOD GPIO Initialization failed.\r\n");
     
     const char* commands[] = {
         "help", "show header", "show crc32", "read rom", "read ram", "write ram"
@@ -53,6 +47,6 @@ int main()
                 line_buffer
             );
     }
-
+    
     return 0;
 }

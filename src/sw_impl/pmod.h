@@ -7,7 +7,7 @@
 // DATA_IN refers to Cart->FPGA
 
 union PmodState {
-    uint16_t state;
+    uint16_t value;
 
     struct {
         uint16_t RDn             : 1;
@@ -47,4 +47,8 @@ enum PmodSignals {
     DATA_IN_SCLK
 };
 
-void init_port_direction(XGpio* xgpio);
+extern XGpio pmod_gpio;
+extern PmodState pmod_state;
+
+int init_pmod(uint32_t base_address);
+void write_pmod();
