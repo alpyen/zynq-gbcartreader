@@ -93,8 +93,8 @@ sw_impl_platform = client.create_platform_component(
     compiler = "gcc"
 )
 
-sw_impl_app = client.create_app_component(
-    name = "sw_impl_app",
+sw_impl_standalone_app = client.create_app_component(
+    name = "sw_impl_standalone_app",
     platform = "$COMPONENT_LOCATION/../sw_impl_platform/export/sw_impl_platform/sw_impl_platform.xpfm",
     domain = "standalone_ps7_cortexa9_0"
 )
@@ -104,8 +104,8 @@ sw_impl_app = client.create_app_component(
 # Link sources that are located outside the workspace directory
 print_info("Linking sources outside the workspace to the applications.")
 
-sw_impl_app.import_files("../src/sw_impl", ["*.cpp"], is_skip_copy_sources=True)
-sw_impl_app.import_files("../src", ["*.cpp"], is_skip_copy_sources=True)
+sw_impl_standalone_app.import_files("../src/sw_impl", ["*.cpp"], is_skip_copy_sources=True)
+sw_impl_standalone_app.import_files("../src", ["common.cpp", "standalone.cpp"], is_skip_copy_sources=True)
 
 print_success("Regeneration complete. You can start Vitis and set the vitis subfolder as the workspace.")
 
