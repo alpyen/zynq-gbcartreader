@@ -21,9 +21,9 @@ union PmodState {
         uint16_t DATA_OUT_RCLK   : 1;
         uint16_t DATA_IN_SDATA   : 1;
         uint16_t DATA_IN_RCLK    : 1;
-        uint16_t DATA_OUT_OE     : 1;
+        uint16_t DATA_OUT_OEn    : 1;
         uint16_t DATA_OUT_SCLK   : 1;
-        uint16_t DATA_IN_PL      : 1;
+        uint16_t DATA_IN_PLn     : 1;
         uint16_t DATA_IN_SCLK    : 1;
 
         uint16_t : 2;
@@ -41,9 +41,9 @@ enum PmodSignals {
     DATA_OUT_RCLK,
     DATA_IN_SDATA,
     DATA_IN_RCLK,
-    DATA_OUT_OE,
+    DATA_OUT_OEn,
     DATA_OUT_SCLK,
-    DATA_IN_PL,
+    DATA_IN_PLn,
     DATA_IN_SCLK
 };
 

@@ -5207,7 +5207,7 @@
 		)
 		(uuid "4691717e-6532-4bef-bff7-8a3b4437fb79")
 	)
-	(label "DATA_IN_PL"
+	(label "~{DATA_IN_PL}"
 		(at 86.36 144.78 0)
 		(effects
 			(font
@@ -5277,7 +5277,7 @@
 		)
 		(uuid "64fc9a1d-e4e4-415b-bc87-bcb15e41085d")
 	)
-	(label "DATA_OUT_OE"
+	(label "~{DATA_OUT_OE}"
 		(at 86.36 137.16 0)
 		(effects
 			(font
@@ -6013,7 +6013,7 @@
 			)
 		)
 	)
-	(global_label "DATA_IN_PL_in"
+	(global_label "~{DATA_IN_PL}_in"
 		(shape input)
 		(at 40.64 144.78 180)
 		(fields_autoplaced yes)
@@ -6101,7 +6101,7 @@
 			)
 		)
 	)
-	(global_label "DATA_OUT_OE_in"
+	(global_label "~{DATA_OUT_OE}_in"
 		(shape input)
 		(at 48.26 71.12 0)
 		(fields_autoplaced yes)
@@ -6431,7 +6431,7 @@
 			)
 		)
 	)
-	(global_label "DATA_OUT_OE_in"
+	(global_label "~{DATA_OUT_OE}_in"
 		(shape input)
 		(at 40.64 137.16 180)
 		(fields_autoplaced yes)
@@ -6585,7 +6585,7 @@
 			)
 		)
 	)
-	(global_label "DATA_IN_PL_in"
+	(global_label "~{DATA_IN_PL}_in"
 		(shape input)
 		(at 48.26 76.2 0)
 		(fields_autoplaced yes)
