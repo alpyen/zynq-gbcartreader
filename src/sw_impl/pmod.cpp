@@ -21,7 +21,16 @@ int init_pmod(uint32_t base_address)
     // Note that this could have been done with the default output values
     // in the IPI but doing this here is much clearer as the signal names
     // are used rather than cryptic magic numbers.
+    reset_pmod();
+
+    // Now it's safe to enable all ports as outputs except DATA_IN_SDATA.
+    XGpio_SetDataDirection(&pmod_gpio, 1, 1 << PmodSignals::DATA_IN_SDATA);
     
+    return XST_SUCCESS;
+}
+
+void reset_pmod()
+{
     pmod_state = {
         .RDn = 1,
         .CSn = 1,
@@ -39,13 +48,8 @@ int init_pmod(uint32_t base_address)
         .DATA_IN_PLn = 1,
         .DATA_IN_SCLK = 0
     };
-    
-    write_pmod();
 
-    // Now it's safe to enable all ports as outputs except DATA_IN_SDATA.
-    XGpio_SetDataDirection(&pmod_gpio, 1, 1 << PmodSignals::DATA_IN_SDATA);
-    
-    return XST_SUCCESS;
+    write_pmod();
 }
 
 /*

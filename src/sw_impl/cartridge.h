@@ -2,9 +2,11 @@
 
 #include <cstdint>
 
+const uint16_t HEADER_BASE_ADDRESS = 0x0100;
+
 extern uint8_t cartridge_buffer[0x4000];
 
-struct CartridgeHeader
+struct cartridge_header
 {
     uint8_t entry_point[4];     // 0x100 - 0x103
     uint8_t nintendo_logo[48];  // 0x104 - 0x133
@@ -21,4 +23,17 @@ struct CartridgeHeader
     uint8_t global_checksum[2]; // 0x14E - 0x14F
 } __attribute__((packed));
 
-void mbc1_read_bank(uint8_t bank);
+namespace mbc1
+{
+    enum registers: uint16_t
+    {
+        RAMG    = 0x0000,
+        BANK1   = 0x2000,
+        BANK2   = 0x4000,
+        MODE    = 0x6000
+    };
+
+    void write_register(registers reg, uint8_t value);
+    void read_rom(uint8_t bank);
+    // TODO: void read_ram(uint8_t bank);
+}

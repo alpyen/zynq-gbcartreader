@@ -25,12 +25,9 @@ void cli_help()
 
 void cli_show_header()
 {
-    mbc1_read_bank(0);
+    mbc1::read_rom(0);
 
-    const uint16_t HEADER_BASE_ADDRESS = 0x0100;
-    const uint16_t HEADER_SIZE = 0x0050;
-
-    CartridgeHeader* header = (CartridgeHeader*)&cartridge_buffer[HEADER_BASE_ADDRESS];
+    cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
 
     xil_printf("Overview:\r\n");
 
@@ -104,10 +101,10 @@ void cli_show_header()
     {
         case 0x00: xil_printf("No RAM"); break;
         case 0x01: xil_printf("Unused"); break;
-        case 0x02: xil_printf("8 KiB"); break;
-        case 0x03: xil_printf("32 KiB"); break;
-        case 0x04: xil_printf("128 KiB"); break;
-        case 0x05: xil_printf("64 KiB"); break;
+        case 0x02: xil_printf("8 KiB (1 banks"); break;
+        case 0x03: xil_printf("32 KiB (4 banks)"); break;
+        case 0x04: xil_printf("128 KiB (16 banks)"); break;
+        case 0x05: xil_printf("64 KiB (8 banks)"); break;
     }
     xil_printf("\r\n\r\n");
 
@@ -127,8 +124,8 @@ void cli_show_crc32()
 
 void cli_read_rom()
 {
-    mbc1_read_bank(0);
-    CartridgeHeader* header = (CartridgeHeader*)&cartridge_buffer[0x0100];
+    mbc1::read_rom(0);
+    cartridge_header* header = (cartridge_header*)&cartridge_buffer[0x0100];
 
     /*
         TODO: Right now only MBC1 works correctly. The other MBCs have
@@ -136,6 +133,9 @@ void cli_read_rom()
     */
 
     unsigned num_banks = 1 << (header->rom_size + 1);
+
+    // TODO: Invalid num_banks handling
+    // TODO: const ROM_BANK_SIZE, RAM_BANK_SIZE to cartridge.h
 
     // These don't line up nicely, so we gotta check them manually.
     switch (num_banks)
@@ -147,7 +147,7 @@ void cli_read_rom()
 
     for (unsigned bank = 0; bank < num_banks; ++bank)
     {
-        mbc1_read_bank(bank);
+        mbc1::read_rom(bank);
 
         for (unsigned address = 0; address < arraysizeof(cartridge_buffer); ++address)
         {

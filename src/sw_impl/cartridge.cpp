@@ -11,14 +11,6 @@ uint8_t cartridge_buffer[0x4000];
     and separated which also aids debugging.
 */
 
-enum MBC1Regs
-{
-    RAMG    = 0x0000,
-    BANK1   = 0x2000,
-    BANK2   = 0x4000,
-    MODE    = 0x6000
-};
-
 void _shiftout_address(uint16_t address)
 {
     pmod_state.ADDR_RCLK = 0;
@@ -91,32 +83,47 @@ uint8_t _shiftin_data()
     return byte;
 }
 
-void _mbc1_write_reg(MBC1Regs address, uint8_t value)
+namespace mbc1
 {
-    _shiftout_address(address);
-    _shiftout_data(value);
-}
-
-void mbc1_read_bank(uint8_t bank)
-{
-    uint16_t bank_base_address = 0x4000;
-
-    if ((bank & 0b11111) == 0)
-        bank_base_address = 0x0000;
-    
-    _mbc1_write_reg(MBC1Regs::MODE, 1);
-    _mbc1_write_reg(MBC1Regs::BANK1, bank & 0b11111);
-    _mbc1_write_reg(MBC1Regs::BANK2, (bank >> 5) & 0b11);
-
-    for (uint16_t address = 0; address < 0x4000; ++address)
+    void reset_cartridge()
     {
-        pmod_state.RDn = 0;
-        write_pmod();
+        write_register(registers::RAMG, 0);
+        write_register(registers::BANK1, 0);
+        write_register(registers::BANK2, 0);
+        write_register(registers::MODE, 0);
 
-        _shiftout_address(bank_base_address + address);
-        cartridge_buffer[address] = _shiftin_data();
+        reset_pmod();
+    }
 
-        pmod_state.RDn = 1;
-        write_pmod();
+    void write_register(registers reg, uint8_t value)
+    {
+        _shiftout_address(reg);
+        _shiftout_data(value);
+    }
+
+    void read_rom(uint8_t bank)
+    {
+        uint16_t bank_base_address = 0x0000;
+
+        if ((bank & 0b11111) != 0)
+            bank_base_address = 0x4000;
+        
+        write_register(registers::MODE, 1);
+        write_register(registers::BANK1, bank & 0b11111);
+        write_register(registers::BANK2, (bank >> 5) & 0b11);
+
+        for (uint16_t address = 0; address < 0x4000; ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(bank_base_address + address);
+            cartridge_buffer[address] = _shiftin_data();
+
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
     }
 }

@@ -51,5 +51,6 @@ extern XGpio pmod_gpio;
 extern PmodState pmod_state;
 
 int init_pmod(uint32_t base_address);
+void reset_pmod();
 void write_pmod();
 void read_pmod();
