@@ -52,3 +52,4 @@ extern PmodState pmod_state;
 
 int init_pmod(uint32_t base_address);
 void write_pmod();
+void read_pmod();

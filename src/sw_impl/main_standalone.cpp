@@ -33,7 +33,7 @@ int main()
         uart_readline(XPAR_UART0_BASEADDR, line_buffer, sizeof(line_buffer));
 
         bool valid_command = false;
-        for (uint8_t i = 0; i < sizeof_array(commands); ++i)
+        for (uint8_t i = 0; i < arraysizeof(commands); ++i)
             if (!strcmp(line_buffer, commands[i]))
             {
                 valid_command = true;

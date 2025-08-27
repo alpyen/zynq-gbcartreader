@@ -1,11 +1,13 @@
 #include "pmod.h"
 
+#include <sleep.h>
+
 PmodState pmod_state;
 XGpio pmod_gpio;
 
 int init_pmod(uint32_t base_address)
 {
-    int result = XGpio_Initialize(&pmod_gpio, XPAR_AXI_PMOD_GPIO_BASEADDR);
+    int result = XGpio_Initialize(&pmod_gpio, base_address);
     if (result != XST_SUCCESS) return result;
 
     // The GPIO IP Core starts in tri-state and needs its inputs/outputs configured.
@@ -46,7 +48,20 @@ int init_pmod(uint32_t base_address)
     return XST_SUCCESS;
 }
 
+/*
+    NOTE: The PMOD IP core is clocked with 100 MHz but the cartridge
+    can handle at most 4.19 MHz (x2 in double speed mode) so we slow
+    it down to ~1MHz for now. Once the reading/writing routine
+    are done we can measure the IOs and sleep less to increase throughput.
+*/
 void write_pmod()
 {
     XGpio_DiscreteWrite(&pmod_gpio, 1, pmod_state.value);
+    usleep(1);
+}
+
+void read_pmod()
+{
+    pmod_state.value = (uint16_t)XGpio_DiscreteRead(&pmod_gpio, 1);
+    usleep(1);
 }

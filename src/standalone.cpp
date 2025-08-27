@@ -1,6 +1,7 @@
 #include "standalone.h"
 
 #include <xuartps.h>
+#include "common.h"
 
 void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size)
 {
@@ -10,11 +11,7 @@ void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size)
     {
         char received = XUartPs_RecvByte(base_address);
 
-        bool is_valid = false;
-        is_valid |= received >= 'a' && received <= 'z';
-        is_valid |= received >= 'A' && received <= 'Z';
-        is_valid |= received >= '0' && received <= '9';
-        is_valid |= received == ' ' || received == '\b' || received == '\r';
+        bool is_valid = is_printable(received) || received == '\b' || received == '\r';
 
         if (!is_valid) continue;
 
