@@ -28,17 +28,25 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
     print(f"Sending command: {" ".join(args.command)}", file=sys.stderr)
     link.write(command)
 
+    bytes_received = 0
+
     print(f"Receiving data...", end="", flush=True, file=sys.stderr)
     last_read = time.time()
 
     try:
         while time.time() - last_read <= TRANSFER_FINISH_TIMEOUT:
-            while link.in_waiting > 0:
-                sys.stdout.buffer.write(link.read(link.in_waiting))
+            if link.in_waiting > 0:
+                # If we don't store the value it may change in between
+                # adding it to bytes_received and calling the actual link.read
+                in_waiting = link.in_waiting
+                bytes_received += in_waiting
+                sys.stdout.buffer.write(link.read(in_waiting))
                 sys.stdout.flush()
                 last_read = time.time()
+
+                print(f"\rReceiving data...{bytes_received//1024}K", end="", flush=True, file=sys.stderr)
 
     except KeyboardInterrupt:
         pass
 
-print("done!", file=sys.stderr)
+print("...done!", file=sys.stderr)
