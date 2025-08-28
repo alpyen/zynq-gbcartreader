@@ -16,7 +16,7 @@ union PmodState {
         uint16_t ADDR_RCLK       : 1;
         uint16_t WRn             : 1;
         uint16_t ADDR_SCLK       : 1;
-        
+
         uint16_t DATA_OUT_SDATA  : 1;
         uint16_t DATA_OUT_RCLK   : 1;
         uint16_t DATA_IN_SDATA   : 1;

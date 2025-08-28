@@ -161,8 +161,8 @@ void cli_read_rom()
                 mbc5::read_rom(bank);
                 break;
         }
-        
-        for (unsigned address = 0; address < arraysizeof(cartridge_buffer); ++address)
+
+        for (unsigned address = 0; address < ROM_BANK_SIZE; ++address)
         {
             if (address % 16 == 0)
                 xil_printf("\r\n%08x:", (bank << 14) + address);
@@ -182,14 +182,13 @@ void cli_read_ram()
     uint8_t cartridge_type = header->cartridge_type;
     unsigned num_banks = 0;
 
-    
     switch (header->ram_size)
     {
         case 0x00:
         case 0x01:
             // There is no RAM.
             return;
-        
+
         case 0x02: num_banks = 1; break;
         case 0x03: num_banks = 4; break;
         case 0x04: num_banks = 16; break;
@@ -211,7 +210,7 @@ void cli_read_ram()
                 break;
         }
 
-        for (unsigned address = 0; address < 0x2000; ++address)
+        for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
         {
             if (address % 16 == 0)
                 xil_printf("\r\n%08x:", (bank << 13) + address);

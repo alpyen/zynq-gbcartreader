@@ -15,7 +15,7 @@ int main()
 
     if (init_pmod(XPAR_AXI_PMOD_GPIO_BASEADDR) != XST_SUCCESS)
         die("PMOD GPIO Initialization failed.\r\n");
-    
+
     const char* commands[] = {
         "help", "show header", "show crc32", "read rom", "read ram", "write ram"
     };
@@ -47,6 +47,6 @@ int main()
                 line_buffer
             );
     }
-    
+
     return 0;
 }

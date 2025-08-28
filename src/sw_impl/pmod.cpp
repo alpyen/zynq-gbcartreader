@@ -25,7 +25,7 @@ int init_pmod(uint32_t base_address)
 
     // Now it's safe to enable all ports as outputs except DATA_IN_SDATA.
     XGpio_SetDataDirection(&pmod_gpio, 1, 1 << PmodSignals::DATA_IN_SDATA);
-    
+
     return XST_SUCCESS;
 }
 
@@ -38,7 +38,7 @@ void reset_pmod()
         .ADDR_RCLK = 0,
         .WRn = 1,
         .ADDR_SCLK = 0,
-        
+
         .DATA_OUT_SDATA = 0,
         .DATA_OUT_RCLK = 0,
         .DATA_IN_SDATA = 0,

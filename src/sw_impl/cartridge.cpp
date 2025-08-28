@@ -3,6 +3,10 @@
 #include <xil_printf.h>
 #include "pmod.h"
 
+const uint16_t ROM_BANK_AREA1_BASE_ADDRESS = 0x0000;
+const uint16_t ROM_BANK_AREA2_BASE_ADDRESS = 0x4000;
+const uint16_t RAM_BANK_BASE_ADDRESS = 0xa000;
+
 uint8_t cartridge_buffer[0x4000];
 
 /*
@@ -83,22 +87,30 @@ uint8_t _shiftin_data()
     return byte;
 }
 
+void _write_register(uint16_t register_address, uint8_t value)
+{
+    _shiftout_address(register_address);
+    _shiftout_data(value);
+}
+
 namespace mbc1
 {
+    enum registers: uint16_t
+    {
+        RAMG    = 0x0000,
+        BANK1   = 0x2000,
+        BANK2   = 0x4000,
+        MODE    = 0x6000
+    };
+
     void reset_cartridge()
     {
-        write_register(registers::RAMG, 0);
-        write_register(registers::BANK1, 0);
-        write_register(registers::BANK2, 0);
-        write_register(registers::MODE, 0);
+        _write_register(registers::RAMG, 0);
+        _write_register(registers::BANK1, 0);
+        _write_register(registers::BANK2, 0);
+        _write_register(registers::MODE, 0);
 
         reset_pmod();
-    }
-
-    void write_register(registers reg, uint8_t value)
-    {
-        _shiftout_address(reg);
-        _shiftout_data(value);
     }
 
     void read_rom(uint8_t bank)
@@ -107,10 +119,10 @@ namespace mbc1
 
         if ((bank & 0b11111) != 0)
             bank_base_address = ROM_BANK_AREA2_BASE_ADDRESS;
-        
-        write_register(registers::MODE, 1);
-        write_register(registers::BANK1, bank & 0b11111);
-        write_register(registers::BANK2, (bank >> 5) & 0b11);
+
+        _write_register(registers::MODE, 1);
+        _write_register(registers::BANK1, bank & 0b11111);
+        _write_register(registers::BANK2, (bank >> 5) & 0b11);
 
         for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
         {
@@ -130,28 +142,30 @@ namespace mbc1
 
 namespace mbc5
 {
+    enum registers: uint16_t
+    {
+        RAMG    = 0x0000,
+        ROMB1   = 0x2000,
+        ROMB2   = 0x3000,
+        RAMB    = 0x4000
+    };
+
     void reset_cartridge()
     {
-        write_register(registers::RAMG, 0);
-        write_register(registers::ROMB1, 0);
-        write_register(registers::ROMB2, 0);
-        write_register(registers::RAMB, 0);
+        _write_register(registers::RAMG, 0);
+        _write_register(registers::ROMB1, 0);
+        _write_register(registers::ROMB2, 0);
+        _write_register(registers::RAMB, 0);
 
         reset_pmod();
-    }
-
-    void write_register(registers reg, uint8_t value)
-    {
-        _shiftout_address(reg);
-        _shiftout_data(value);
     }
 
     void read_rom(uint16_t bank)
     {
         uint16_t bank_base_address = ROM_BANK_AREA2_BASE_ADDRESS;
 
-        write_register(registers::ROMB1, bank & 0xff);
-        write_register(registers::ROMB2, (bank >> 8) & 0b1);
+        _write_register(registers::ROMB1, bank & 0xff);
+        _write_register(registers::ROMB2, (bank >> 8) & 0b1);
 
         for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
         {
@@ -174,8 +188,8 @@ namespace mbc5
 
         const uint8_t RAM_ENABLE_PATTERN = 0b00001010;
 
-        write_register(registers::RAMG, RAM_ENABLE_PATTERN);
-        write_register(registers::RAMB, bank);
+        _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+        _write_register(registers::RAMB, bank);
 
         for (uint16_t address = 0; address < RAM_BANK_SIZE; ++address)
         {
