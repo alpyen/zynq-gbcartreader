@@ -33,6 +33,13 @@ namespace mbc1
     // TODO: void write_ram();
 }
 
+namespace mbc3
+{
+    void read_rom(uint8_t bank);
+    void read_ram(uint8_t bank);
+    // TODO: void write_ram();
+}
+
 namespace mbc5
 {
     void read_rom(uint16_t bank);

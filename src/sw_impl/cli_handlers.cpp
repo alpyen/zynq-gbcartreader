@@ -164,6 +164,14 @@ void cli_read_rom()
                 mbc1::read_rom(bank);
                 break;
 
+            case 0x0f:
+            case 0x10:
+            case 0x11:
+            case 0x12:
+            case 0x13:
+                mbc3::read_rom(bank);
+                break;
+
             case 0x19:
             case 0x1a:
             case 0x1b:
@@ -217,6 +225,14 @@ void cli_read_ram()
     {
         switch (cartridge_type)
         {
+            // case 0x0f:   // MBC3 + Timer + Battery
+            case 0x10:      // MBC3 + Timer + RAM + Battery
+            // case 0x11:   // MBC3
+            case 0x12:      // MBC3 + RAM
+            case 0x13:      // MBC3 + RAM + Battery
+                mbc3::read_ram(bank);
+                break;
+
             // case 0x19:   // MBC5
             case 0x1a:      // MBC5 + RAM
             case 0x1b:      // MBC5 + RAM + Battery

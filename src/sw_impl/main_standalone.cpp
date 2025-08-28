@@ -11,8 +11,6 @@
 
 int main()
 {
-    xil_printf("Hello, world! from my GBCartReader Application!\r\n");
-
     if (init_pmod(XPAR_AXI_PMOD_GPIO_BASEADDR) != XST_SUCCESS)
         die("PMOD GPIO Initialization failed.\r\n");
 
