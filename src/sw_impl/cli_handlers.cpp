@@ -25,6 +25,8 @@ void cli_help()
 
 void cli_show_header()
 {
+    // All MBCs power up in such a state that mbc1::read_rom(0) will read the first bank
+    // which contains the header for further identification (when reading other banks or RAM).
     mbc1::read_rom(0);
 
     cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
@@ -127,15 +129,8 @@ void cli_read_rom()
     mbc1::read_rom(0);
     cartridge_header* header = (cartridge_header*)&cartridge_buffer[0x0100];
 
-    /*
-        TODO: Right now only MBC1 works correctly. The other MBCs have
-        a different register layout and need different read/write routines.
-    */
-
+    uint8_t cartridge_type = header->cartridge_type;
     unsigned num_banks = 1 << (header->rom_size + 1);
-
-    // TODO: Invalid num_banks handling
-    // TODO: const ROM_BANK_SIZE, RAM_BANK_SIZE to cartridge.h
 
     // These don't line up nicely, so we gotta check them manually.
     switch (num_banks)
@@ -143,12 +138,30 @@ void cli_read_rom()
         case 0x52: num_banks = 72; break;
         case 0x53: num_banks = 80; break;
         case 0x54: num_banks = 96; break;
+        // TODO: Invalid num_banks handling
     }
 
+    // Technically we already read bank 0, but can't hurt to read it again.
     for (unsigned bank = 0; bank < num_banks; ++bank)
     {
-        mbc1::read_rom(bank);
+        switch (cartridge_type)
+        {
+            case 0x01:
+            case 0x02:
+            case 0x03:
+                mbc1::read_rom(bank);
+                break;
 
+            case 0x19:
+            case 0x1a:
+            case 0x1b:
+            case 0x1c:
+            case 0x1d:
+            case 0x1e:
+                mbc5::read_rom(bank);
+                break;
+        }
+        
         for (unsigned address = 0; address < arraysizeof(cartridge_buffer); ++address)
         {
             if (address % 16 == 0)
@@ -163,7 +176,51 @@ void cli_read_rom()
 
 void cli_read_ram()
 {
-    xil_printf("Read RAM handler called.\r\n");
+    mbc1::read_rom(0);
+    cartridge_header* header = (cartridge_header*)&cartridge_buffer[0x0100];
+
+    uint8_t cartridge_type = header->cartridge_type;
+    unsigned num_banks = 0;
+
+    
+    switch (header->ram_size)
+    {
+        case 0x00:
+        case 0x01:
+            // There is no RAM.
+            return;
+        
+        case 0x02: num_banks = 1; break;
+        case 0x03: num_banks = 4; break;
+        case 0x04: num_banks = 16; break;
+        case 0x05: num_banks = 8; break;
+        // TODO: Invalid num_banks handling
+    }
+
+    for (unsigned bank = 0; bank < num_banks; ++bank)
+    {
+        switch (cartridge_type)
+        {
+            case 0x19:
+            case 0x1a:
+            case 0x1b:
+            case 0x1c:
+            case 0x1d:
+            case 0x1e:
+                mbc5::read_ram(bank);
+                break;
+        }
+
+        for (unsigned address = 0; address < 0x2000; ++address)
+        {
+            if (address % 16 == 0)
+                xil_printf("\r\n%08x:", (bank << 13) + address);
+
+            xil_printf(" %02x", cartridge_buffer[address]);
+        }
+    }
+
+    xil_printf("\r\n");
 }
 
 void cli_write_ram()

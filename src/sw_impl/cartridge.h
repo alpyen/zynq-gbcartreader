@@ -4,7 +4,14 @@
 
 const uint16_t HEADER_BASE_ADDRESS = 0x0100;
 
-extern uint8_t cartridge_buffer[0x4000];
+const uint16_t ROM_BANK_AREA1_BASE_ADDRESS = 0x0000;
+const uint16_t ROM_BANK_AREA2_BASE_ADDRESS = 0x4000;
+const uint16_t RAM_BANK_BASE_ADDRESS = 0xa000;
+
+const unsigned ROM_BANK_SIZE = 0x4000;
+const unsigned RAM_BANK_SIZE = 0x2000;
+
+extern uint8_t cartridge_buffer[ROM_BANK_SIZE];
 
 struct cartridge_header
 {
@@ -36,4 +43,19 @@ namespace mbc1
     void write_register(registers reg, uint8_t value);
     void read_rom(uint8_t bank);
     // TODO: void read_ram(uint8_t bank);
+}
+
+namespace mbc5
+{
+    enum registers: uint16_t
+    {
+        RAMG    = 0x0000,
+        ROMB1   = 0x2000,
+        ROMB2   = 0x3000,
+        RAMB    = 0x4000
+    };
+
+    void write_register(registers reg, uint8_t value);
+    void read_rom(uint16_t bank);
+    void read_ram(uint8_t bank);
 }

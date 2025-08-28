@@ -103,16 +103,16 @@ namespace mbc1
 
     void read_rom(uint8_t bank)
     {
-        uint16_t bank_base_address = 0x0000;
+        uint16_t bank_base_address = ROM_BANK_AREA1_BASE_ADDRESS;
 
         if ((bank & 0b11111) != 0)
-            bank_base_address = 0x4000;
+            bank_base_address = ROM_BANK_AREA2_BASE_ADDRESS;
         
         write_register(registers::MODE, 1);
         write_register(registers::BANK1, bank & 0b11111);
         write_register(registers::BANK2, (bank >> 5) & 0b11);
 
-        for (uint16_t address = 0; address < 0x4000; ++address)
+        for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
         {
             pmod_state.RDn = 0;
             write_pmod();
@@ -120,6 +120,76 @@ namespace mbc1
             _shiftout_address(bank_base_address + address);
             cartridge_buffer[address] = _shiftin_data();
 
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
+    }
+}
+
+namespace mbc5
+{
+    void reset_cartridge()
+    {
+        write_register(registers::RAMG, 0);
+        write_register(registers::ROMB1, 0);
+        write_register(registers::ROMB2, 0);
+        write_register(registers::RAMB, 0);
+
+        reset_pmod();
+    }
+
+    void write_register(registers reg, uint8_t value)
+    {
+        _shiftout_address(reg);
+        _shiftout_data(value);
+    }
+
+    void read_rom(uint16_t bank)
+    {
+        uint16_t bank_base_address = ROM_BANK_AREA2_BASE_ADDRESS;
+
+        write_register(registers::ROMB1, bank & 0xff);
+        write_register(registers::ROMB2, (bank >> 8) & 0b1);
+
+        for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(bank_base_address + address);
+            cartridge_buffer[address] = _shiftin_data();
+
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
+    }
+
+    void read_ram(uint8_t bank)
+    {
+        uint16_t bank_base_address = RAM_BANK_BASE_ADDRESS;
+
+        const uint8_t RAM_ENABLE_PATTERN = 0b00001010;
+
+        write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+        write_register(registers::RAMB, bank);
+
+        for (uint16_t address = 0; address < RAM_BANK_SIZE; ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(bank_base_address + address);
+
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            cartridge_buffer[address] = _shiftin_data();
+
+            pmod_state.CSn = 1;
             pmod_state.RDn = 1;
             write_pmod();
         }
