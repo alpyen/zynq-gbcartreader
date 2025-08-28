@@ -217,14 +217,15 @@ void cli_read_ram()
     {
         switch (cartridge_type)
         {
-            case 0x19:
-            case 0x1a:
-            case 0x1b:
-            case 0x1c:
-            case 0x1d:
-            case 0x1e:
+            // case 0x19:   // MBC5
+            case 0x1a:      // MBC5 + RAM
+            case 0x1b:      // MBC5 + RAM + Battery
+            // case 0x1c:   // MBC5 + Rumble
+            case 0x1d:      // MBC5 + Rumble + RAM
+            case 0x1e:      // MBC5 + Rumble + RAM + Battery
                 mbc5::read_ram(bank);
                 break;
+            // TODO: Invalid MBC handling
         }
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
