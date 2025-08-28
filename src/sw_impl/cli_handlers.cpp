@@ -6,6 +6,8 @@
 #include "cartridge.h"
 #include "../common.h"
 
+bool echo = false;
+
 void cli_help()
 {
     xil_printf(
@@ -15,12 +17,22 @@ void cli_help()
         "Available commands:\r\n"
         "-------------------\r\n"
         "help          Display this help page\r\n"
-        "show header   Read header from cartridge rom and display it humanly readable\r\n"
-        "show crc32    Read cartridge rom and calculate its crc32\r\n"
-        "read rom      Read cartridge rom and echo it in binary form\r\n"
-        "read ram      Read cartridge ram (if available) and echo it in binary form\r\n"
+        "echo          Echo commands in a prompt and change data output to hex view\r\n"
+        "show header   Read header from cartridge rom, parse and display it\r\n"
+        "show crc32    Read cartridge rom/ram and calculate its crc32\r\n"
+        "read rom      Read cartridge rom and echo it in binary or hex\r\n"
+        "read ram      Read cartridge ram (if available) and echo it in binary or hex\r\n"
         "write ram     Write cartridge ram (if available) from binary terminal data\r\n"
     );
+}
+
+void cli_echo()
+{
+    // "echo" enables a command prompt and provides a more user friendly way
+    // to interface with the application. It also changes the data output to
+    // a hex view. If you want to dump roms/rams, disable echo and pipe
+    // straight to a file.
+    echo = !echo;
 }
 
 void cli_show_header()
@@ -164,14 +176,19 @@ void cli_read_rom()
 
         for (unsigned address = 0; address < ROM_BANK_SIZE; ++address)
         {
-            if (address % 16 == 0)
-                xil_printf("\r\n%08x:", (bank << 14) + address);
+            if (echo)
+            {
+                if (address % 16 == 0)
+                    xil_printf("\r\n%08x:", (bank << 14) + address);
 
-            xil_printf(" %02x", cartridge_buffer[address]);
+                xil_printf(" %02x", cartridge_buffer[address]);
+            }
+            else
+                xil_printf("%c", cartridge_buffer[address]);
         }
     }
 
-    xil_printf("\r\n");
+    if (echo) xil_printf("\r\n");
 }
 
 void cli_read_ram()
@@ -212,14 +229,19 @@ void cli_read_ram()
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
         {
-            if (address % 16 == 0)
+            if (echo)
+            {
+                if (address % 16 == 0)
                 xil_printf("\r\n%08x:", (bank << 13) + address);
 
-            xil_printf(" %02x", cartridge_buffer[address]);
+                xil_printf(" %02x", cartridge_buffer[address]);
+            }
+            else
+                xil_printf("%c", cartridge_buffer[address]);
         }
     }
 
-    xil_printf("\r\n");
+    if (echo) xil_printf("\r\n");
 }
 
 void cli_write_ram()

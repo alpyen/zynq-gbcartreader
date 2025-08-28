@@ -3,7 +3,7 @@
 #include <xuartps.h>
 #include "common.h"
 
-void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size)
+void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size, bool echo)
 {
     uint8_t num_received = 0;
 
@@ -27,9 +27,12 @@ void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size)
             {
                 num_received--;
 
-                XUartPs_SendByte(base_address, '\b');
-                XUartPs_SendByte(base_address, ' ');
-                XUartPs_SendByte(base_address, '\b');
+                if (echo)
+                {
+                    XUartPs_SendByte(base_address, '\b');
+                    XUartPs_SendByte(base_address, ' ');
+                    XUartPs_SendByte(base_address, '\b');
+                }
             }
 
             continue;
@@ -40,16 +43,16 @@ void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size)
 
         if (num_received > buffer_size - 1)
         {
-            XUartPs_SendByte(base_address, '\b');
+            if (echo) XUartPs_SendByte(base_address, '\b');
             num_received--;
         }
 
-        XUartPs_SendByte(base_address, received);
+        if (echo) XUartPs_SendByte(base_address, received);
 
         if (received == '\r') break;
     }
 
-    XUartPs_SendByte(base_address, '\n');
+    if (echo) XUartPs_SendByte(base_address, '\n');
 
     // Overwrite the \r line break with null-terminator
     buffer[num_received - 1] = '\0';
