@@ -1,0 +1,44 @@
+import argparse
+import serial
+import sys
+import time
+
+parser = argparse.ArgumentParser(
+    prog="reader",
+    description=
+        "Dispatches serial commmands to the board on a given port and baudrate as 8N1.\r\n"
+        "Use this tool with the standalone implementations of the ZYNQ GBCartReader.",
+    formatter_class=argparse.RawTextHelpFormatter
+)
+parser.add_argument("-p", "--port", type=str, required=True, help="Serial port the board is connected to")
+parser.add_argument("-b", "--baudrate", type=int, required=True, default=115200, help="Baudrate of the connection (default: 115200)")
+parser.add_argument("command", nargs=argparse.REMAINDER, help="Command to send (show header, read rom, help, ...)")
+
+args = parser.parse_args(args=None if sys.argv[1:] else ["--help"])
+
+command = (" ".join(args.command) + "\r").encode("ascii")
+
+# For now there is no mechanism to detect the number of rom or ram banks
+# to terminate the serial connection so we rely on a timeout of 3 seconds
+# because reading out takes less than 3 seconds.
+# TODO: Read out header here and wait for correct amount of bytes?
+TRANSFER_FINISH_TIMEOUT = 3
+
+with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1) as link:
+    print(f"Sending command: {" ".join(args.command)}", file=sys.stderr)
+    link.write(command)
+
+    print(f"Receiving data...", end="", flush=True, file=sys.stderr)
+    last_read = time.time()
+
+    try:
+        while time.time() - last_read <= TRANSFER_FINISH_TIMEOUT:
+            while link.in_waiting > 0:
+                sys.stdout.buffer.write(link.read(link.in_waiting))
+                sys.stdout.flush()
+                last_read = time.time()
+
+    except KeyboardInterrupt:
+        pass
+
+print("done!", file=sys.stderr)
