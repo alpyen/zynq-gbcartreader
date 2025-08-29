@@ -23,6 +23,8 @@ void cli_help()
         "read rom      Read cartridge rom and echo it in binary or hex\r\n"
         "read ram      Read cartridge ram (if available) and echo it in binary or hex\r\n"
         "write ram     Write cartridge ram (if available) from binary terminal data\r\n"
+        "read rtc      Read cartridge RTC (if available) and echo it in binary or hex\r\n"
+        "write rtc     Write cartridge RTC (if available) from binary terminal data\r\n"
     );
 }
 
@@ -61,6 +63,7 @@ void cli_show_header()
     xil_printf("  Type:     ", header->cartridge_type);
     switch (header->cartridge_type)
     {
+        // TODO: Change magic numbers to enum cartridge_type
         case 0x00: xil_printf("ROM"); break;
         case 0x01: xil_printf("MBC1"); break;
         case 0x02: xil_printf("MBC1 + RAM"); break;
@@ -264,4 +267,49 @@ void cli_read_ram()
 void cli_write_ram()
 {
     xil_printf("Write RAM handler called.\r\n");
+}
+
+void cli_read_rtc()
+{
+    mbc1::read_rom(0);
+
+    cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
+
+    switch (header->cartridge_type)
+    {
+        case 0x0f:
+        case 0x10:
+            mbc3::read_rtc();
+            break;
+    }
+
+    if (echo)
+    {
+        rtc_data* data = (rtc_data*)&cartridge_buffer;
+        uint32_t days = ((uint32_t)data->day_halt_carry.day_higher << 8) | data->day_lower;
+        xil_printf(
+            "RTC: %u days, %u minutes, %u seconds\r\n",
+            days, data->minutes, data->seconds
+        );
+        xil_printf(
+            "HALT: %u, Day Counter Carry: %u",
+            data->day_halt_carry.halt, data->day_halt_carry.day_counter_carry
+        );
+    }
+    else
+    {
+        // Registers are selected and then appear on the whole address range.
+        // mbc3::read_rtc just lists them sequentially.
+        for (unsigned address = 0; address < 5; ++address)
+        {
+            xil_printf("%c", cartridge_buffer[address]);
+        }
+    }
+
+    if (echo) xil_printf("\r\n");
+}
+
+void cli_write_rtc()
+{
+    xil_printf("Write RTC handler called.\r\n");
 }

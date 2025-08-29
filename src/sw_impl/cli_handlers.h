@@ -11,3 +11,5 @@ void cli_show_crc32();
 void cli_read_rom();
 void cli_read_ram();
 void cli_write_ram();
+void cli_read_rtc();
+void cli_write_rtc();

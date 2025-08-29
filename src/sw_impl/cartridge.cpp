@@ -5,7 +5,7 @@
 
 const uint16_t ROM_BANK_AREA1_BASE_ADDRESS = 0x0000;
 const uint16_t ROM_BANK_AREA2_BASE_ADDRESS = 0x4000;
-const uint16_t RAM_BANK_BASE_ADDRESS = 0xa000;
+const uint16_t RAM_BANK_RTC_BASE_ADDRESS = 0xa000;
 
 uint8_t cartridge_buffer[0x4000];
 
@@ -142,6 +142,8 @@ namespace mbc1
 
 namespace mbc3
 {
+    const uint8_t RAM_RTC_ENABLE_PATTERN = 0b00001010;
+
     enum registers: uint16_t
     {
         RAMG_RTCRG  = 0x0000,
@@ -186,8 +188,6 @@ namespace mbc3
 
     void read_ram(uint8_t bank)
     {
-        const uint8_t RAM_RTC_ENABLE_PATTERN = 0b00001010;
-
         _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
         _write_register(registers::RAMB_RTCRS, bank);
 
@@ -196,7 +196,7 @@ namespace mbc3
             pmod_state.RDn = 0;
             write_pmod();
 
-            _shiftout_address(RAM_BANK_BASE_ADDRESS + address);
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
 
             pmod_state.CSn = 0;
             write_pmod();
@@ -210,10 +210,36 @@ namespace mbc3
 
         reset_cartridge();
     }
+
+    void read_rtc()
+    {
+        _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
+
+        const uint8_t RTC_REGISTERS_COUNT = 5;
+        const uint8_t RTC_REGISTERS_BASE_INDEX = 0x08;
+
+        for (uint8_t index = 0; index < RTC_REGISTERS_COUNT; ++index)
+        {
+            _write_register(registers::RAMB_RTCRS, RTC_REGISTERS_BASE_INDEX + index);
+
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS);
+            cartridge_buffer[index] = _shiftin_data();
+
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
+    }
 }
 
 namespace mbc5
 {
+    const uint8_t RAM_ENABLE_PATTERN = 0b00001010;
+
     enum registers: uint16_t
     {
         RAMG    = 0x0000,
@@ -256,8 +282,6 @@ namespace mbc5
 
     void read_ram(uint8_t bank)
     {
-        const uint8_t RAM_ENABLE_PATTERN = 0b00001010;
-
         _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
         _write_register(registers::RAMB, bank);
 
@@ -266,7 +290,7 @@ namespace mbc5
             pmod_state.RDn = 0;
             write_pmod();
 
-            _shiftout_address(RAM_BANK_BASE_ADDRESS + address);
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
 
             pmod_state.CSn = 0;
             write_pmod();
