@@ -161,26 +161,26 @@ void cli_read_rom()
     {
         switch (cartridge_type)
         {
-            case 0x01:
-            case 0x02:
-            case 0x03:
+            case 0x01: // MBC1
+            case 0x02: // MBC1 + RAM
+            case 0x03: // MBC1 + RAM + Battery
                 mbc1::read_rom(bank);
                 break;
 
-            case 0x0f:
-            case 0x10:
-            case 0x11:
-            case 0x12:
-            case 0x13:
+            case 0x0f: // MBC3 + Timer + Battery
+            case 0x10: // MBC3 + Timer + RAM + Battery
+            case 0x11: // MBC3
+            case 0x12: // MBC3 + RAM
+            case 0x13: // MBC3 + RAM + Battery
                 mbc3::read_rom(bank);
                 break;
 
-            case 0x19:
-            case 0x1a:
-            case 0x1b:
-            case 0x1c:
-            case 0x1d:
-            case 0x1e:
+            case 0x19: // MBC5
+            case 0x1a: // MBC5 + RAM
+            case 0x1b: // MBC5 + RAM + Battery
+            case 0x1c: // MBC5 + Rumble
+            case 0x1d: // MBC5 + Rumble + RAM
+            case 0x1e: // MBC5 + Rumble + RAM + Battery
                 mbc5::read_rom(bank);
                 break;
         }
@@ -277,8 +277,8 @@ void cli_read_rtc()
 
     switch (header->cartridge_type)
     {
-        case 0x0f:
-        case 0x10:
+        case 0x0f: // MBC3 + Timer + Battery
+        case 0x10: // MBC3 + Timer + RAM + Battery
             mbc3::read_rtc();
             break;
     }

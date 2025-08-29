@@ -16,7 +16,7 @@ parser.add_argument("command", nargs=argparse.REMAINDER, help="Command to send (
 
 args = parser.parse_args(args=None if sys.argv[1:] else ["--help"])
 
-command = (" ".join(args.command) + "\r").encode("ascii")
+command = " ".join(args.command)
 
 # For now there is no mechanism to detect the number of rom or ram banks
 # to terminate the serial connection so we rely on a timeout of 3 seconds
@@ -25,8 +25,8 @@ command = (" ".join(args.command) + "\r").encode("ascii")
 TRANSFER_FINISH_TIMEOUT = 3
 
 with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1) as link:
-    print(f"Sending command: {" ".join(args.command)}", file=sys.stderr)
-    link.write(command)
+    print(f"Sending command: {command}", file=sys.stderr)
+    link.write((command + "\r").encode("ascii"))
 
     bytes_received = 0
 
