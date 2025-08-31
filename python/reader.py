@@ -22,11 +22,32 @@ command = " ".join(args.command)
 # to terminate the serial connection so we rely on a timeout of 3 seconds
 # because reading out takes less than 3 seconds.
 # TODO: Read out header here and wait for correct amount of bytes?
+# TODO: Add congestion control by ACKing after x amount of bytes in long responses (both sides!)
 TRANSFER_FINISH_TIMEOUT = 3
 
 with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1) as link:
     print(f"Sending command: {command}", file=sys.stderr)
     link.write((command + "\r").encode("ascii"))
+
+    if command == "write ram":
+        ram = sys.stdin.buffer.read()
+
+        print(f"Sending data...", end="", flush=True, file=sys.stderr)
+
+        for bank in range(len(ram) // 8192):
+            for burst in range(8192 // 64):
+                link.write(ram[bank*8192+burst*64:bank*8192+(burst+1)*64])
+                received = 0
+                while received < 64:
+                    in_waiting = link.in_waiting
+                    if in_waiting > 0:
+                        link.read(in_waiting)
+                        received += in_waiting
+
+                print(f"\rSending data...{(bank*8192+(burst+1)*64)//1024}K/{len(ram)//1024}K", end="", flush=True, file=sys.stderr)
+
+        print("...done!")
+        exit(0)
 
     bytes_received = 0
 

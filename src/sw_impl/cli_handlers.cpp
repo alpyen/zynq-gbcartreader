@@ -18,8 +18,7 @@ void cli_help()
         "-------------------\r\n"
         "help          Display this help page\r\n"
         "echo          Echo commands in a prompt and change data output to hex view\r\n"
-        "show header   Read header from cartridge rom, parse and display it\r\n"
-        "show crc32    Read cartridge rom/ram and calculate its crc32\r\n"
+        "read header   Read cartridge header and echo it in binary or parsed format\r\n"
         "read rom      Read cartridge rom and echo it in binary or hex\r\n"
         "read ram      Read cartridge ram (if available) and echo it in binary or hex\r\n"
         "write ram     Write cartridge ram (if available) from binary terminal data\r\n"
@@ -37,11 +36,19 @@ void cli_echo()
     echo = !echo;
 }
 
-void cli_show_header()
+void cli_read_header()
 {
     // All MBCs power up in such a state that mbc1::read_rom(0) will read the first bank
     // which contains the header for further identification (when reading other banks or RAM).
     mbc1::read_rom(0);
+
+    if (!echo)
+    {
+        for (unsigned address = HEADER_BASE_ADDRESS; address < HEADER_BASE_ADDRESS + sizeof(cartridge_header); ++address)
+            xil_printf("%c", cartridge_buffer[address]);
+
+        return;
+    }
 
     cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
 
@@ -132,11 +139,6 @@ void cli_show_header()
         xil_printf(" %02x", ((uint8_t*)header)[i]);
     }
     xil_printf("\r\n");
-}
-
-void cli_show_crc32()
-{
-    xil_printf("Show CRC32 handler called.\r\n");
 }
 
 void cli_read_rom()
@@ -266,7 +268,43 @@ void cli_read_ram()
 
 void cli_write_ram()
 {
-    xil_printf("Write RAM handler called.\r\n");
+    mbc1::read_rom(0);
+
+    cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
+    uint8_t cartridge_type = header->cartridge_type;
+    uint8_t num_banks = 0;
+
+    switch (header->ram_size)
+    {
+        case 0x02: num_banks = 1; break;
+        case 0x03: num_banks = 4; break;
+        case 0x04: num_banks = 16; break;
+        case 0x05: num_banks = 8; break;
+    }
+
+    switch (cartridge_type)
+    {
+        case 0x10: // MBC3 + Timer + RAM + Battery
+        case 0x12: // MBC3 + RAM
+        case 0x13: // MBC3 + RAM + Battery
+            for (unsigned bank = 0; bank < num_banks; ++bank)
+            {
+                for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
+                {
+                    /*
+                        TODO: This is just a rudimentary flow control implementation
+                            to not overrun the RX buffer on the Zynq when waiting
+                            for the GPIO to write the data.
+                    */
+                    uint8_t byte = XUartPs_RecvByte(XPAR_UART0_BASEADDR);
+                    cartridge_buffer[address] = byte;
+                    XUartPs_SendByte(XPAR_UART0_BASEADDR, byte);
+                }
+
+                mbc3::write_ram(bank);
+            }
+            break;
+    }
 }
 
 void cli_read_rtc()

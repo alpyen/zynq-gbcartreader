@@ -58,7 +58,7 @@ namespace mbc3
 {
     void read_rom(uint8_t bank);
     void read_ram(uint8_t bank);
-    // TODO: void write_ram();
+    void write_ram(uint8_t bank);
     void read_rtc();
     // TODO: void write_rtc();
 }

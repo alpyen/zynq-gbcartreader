@@ -15,15 +15,13 @@ int main()
         die("PMOD GPIO Initialization failed.\r\n");
 
     const char* commands[] = {
-        "help", "echo", "show header", "show crc32",
-        "read rom", "read ram", "write ram", "read rtc",
-        "write rtc"
+        "help", "echo", "read header", "read rom",
+        "read ram", "write ram", "read rtc", "write rtc"
     };
 
     void (* const handlers[])(void) = {
-        cli_help, cli_echo, cli_show_header, cli_show_crc32,
-        cli_read_rom, cli_read_ram, cli_write_ram, cli_read_rtc,
-        cli_write_rtc
+        cli_help, cli_echo, cli_read_header, cli_read_rom,
+        cli_read_ram, cli_write_ram, cli_read_rtc, cli_write_rtc
     };
 
     char line_buffer[16];

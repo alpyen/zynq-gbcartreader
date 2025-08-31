@@ -211,6 +211,47 @@ namespace mbc3
         reset_cartridge();
     }
 
+    void write_ram(uint8_t bank)
+    {
+        _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
+        _write_register(registers::RAMB_RTCRS, bank);
+
+        for (uint16_t address = 0; address < RAM_BANK_SIZE; ++address)
+        {
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
+
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            pmod_state.DATA_OUT_RCLK = 0;
+
+            for (unsigned i = 0; i < 8; ++i)
+            {
+                pmod_state.DATA_OUT_SCLK = 0;
+                pmod_state.DATA_OUT_SDATA = (cartridge_buffer[address] >> (7-i)) & 0b1;
+                write_pmod();
+
+                pmod_state.DATA_OUT_SCLK = 1;
+                write_pmod();
+            }
+
+            pmod_state.DATA_OUT_RCLK = 1;
+            write_pmod();
+
+            pmod_state.DATA_OUT_OEn = 0;
+            pmod_state.WRn = 0;
+            write_pmod();
+
+            pmod_state.WRn = 1;
+            write_pmod();
+
+            pmod_state.DATA_OUT_OEn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
+    }
+
     void read_rtc()
     {
         _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
