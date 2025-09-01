@@ -2,6 +2,7 @@
 
 #include <xuartps.h>
 #include <xil_printf.h>
+#include <string.h>
 
 #include "cartridge.h"
 #include "../common.h"
@@ -34,88 +35,103 @@ void cli_parse_header()
 
     xil_printf("Overview:\r\n");
 
-    // The title can include the "Manufacturer Code" and the "CGB flag"
-    // depending on the age of the game/cartridge.
+    xil_printf("  Entry Point:      ");
+    for (unsigned i = 0; i < arraysizeof(header->entry_point); ++i)
+        xil_printf(" %02x", header->entry_point[i]);
+    xil_printf("\r\n");
+
+
+    xil_printf(
+        "  Nintendo Logo:     %s\r\n",
+        memcmp(header->nintendo_logo, NINTENDO_LOGO, arraysizeof(NINTENDO_LOGO)) ? "Bad" : "Good"
+    );
+
+
+    // The title can include the "Manufacturer Code" and the "CGB flag" depending on the age of the game/cartridge.
     // We only display the printable characters.
-    xil_printf("  Title:    ");
+    xil_printf("  Title:             ");
     for (unsigned i = 0; i < arraysizeof(header->title); ++i)
     {
         if (!is_printable(header->title[i])) break;
         xil_printf("%c", header->title[i]);
     }
     xil_printf("\r\n");
+    xil_printf(
+        "  Manufac. Code (?): %c%c%c%c\r\n",
+        header->title[11], header->title[12], header->title[13], header->title[14]
+    );
 
-    xil_printf("  Version:  %02x\r\n", header->rom_version);
-
-    xil_printf("  Type:     ", header->cartridge_type);
-    switch (header->cartridge_type)
-    {
-        // TODO: Change magic numbers to enum cartridge_type
-        case 0x00: xil_printf("ROM"); break;
-        case 0x01: xil_printf("MBC1"); break;
-        case 0x02: xil_printf("MBC1 + RAM"); break;
-        case 0x03: xil_printf("MBC1 + RAM + Battery"); break;
-        case 0x05: xil_printf("MBC2"); break;
-        case 0x06: xil_printf("MBC2 + Battery"); break;
-        case 0x08: xil_printf("ROM + RAM"); break;
-        case 0x09: xil_printf("ROM + RAM + Battery"); break;
-        case 0x0b: xil_printf("MMM01"); break;
-        case 0x0c: xil_printf("MMM01 + RAM"); break;
-        case 0x0d: xil_printf("MMM01 + RAM + Battery"); break;
-        case 0x0f: xil_printf("MBC3 + Timer + Battery"); break;
-        case 0x10: xil_printf("MBC3 + Timer + RAM + Battery"); break;
-        case 0x11: xil_printf("MBC3"); break;
-        case 0x12: xil_printf("MBC3 + RAM"); break;
-        case 0x13: xil_printf("MBC3 + RAM + Battery"); break;
-        case 0x19: xil_printf("MBC5"); break;
-        case 0x1a: xil_printf("MBC5 + RAM"); break;
-        case 0x1b: xil_printf("MBC5 + RAM + Battery"); break;
-        case 0x1c: xil_printf("MBC5 + Rumble"); break;
-        case 0x1d: xil_printf("MBC5 + Rumble + RAM"); break;
-        case 0x1e: xil_printf("MBC5 + Rumble + RAM + Battery"); break;
-        case 0x20: xil_printf("MBC6"); break;
-        case 0x22: xil_printf("MBC7 + Sensor + Rumble + RAM + Battery"); break;
-        case 0xfc: xil_printf("Pocket Camera"); break;
-        case 0xfd: xil_printf("Bandai TAMA5"); break;
-        case 0xfe: xil_printf("HuC3"); break;
-        case 0xff: xil_printf("HuC1 + RAM + Battery"); break;
-    }
+    xil_printf("  CGB Flag:          ");
+    if (header->title[15] == 0x80)
+        xil_printf("CGB supported, but backwards compatible");
+    else if (header->title[15] == 0xc0)
+        xil_printf("CGB exclusive");
+    else
+        xil_printf("No");
     xil_printf("\r\n");
 
-    xil_printf("  ROM Size: ", header->rom_size);
-    switch (header->rom_size)
-    {
-        case 0x00: xil_printf("32 KiB (2 banks)"); break;
-        case 0x01: xil_printf("64 KiB (4 banks)"); break;
-        case 0x02: xil_printf("128 KiB (8 banks)"); break;
-        case 0x03: xil_printf("256 KiB (16 banks)"); break;
-        case 0x04: xil_printf("512 KiB (32 banks)"); break;
-        case 0x05: xil_printf("1 MiB (64 banks)"); break;
-        case 0x06: xil_printf("2 MiB (128 banks)"); break;
-        case 0x07: xil_printf("4 MiB (256 banks)"); break;
-        case 0x08: xil_printf("8 MiB (512 banks)"); break;
-        case 0x52: xil_printf("1.1 MiB (72 banks)"); break;
-        case 0x53: xil_printf("1.2 MiB (80 banks)"); break;
-        case 0x54: xil_printf("1.5 MiB (96 banks)"); break;
-    }
+
+    xil_printf(
+        "  New Licensee Code: %s\r\n",
+        get_new_licensee_code_string(header->new_licensee_code)
+    );
+
+
+    xil_printf("  SGB Flag:          %s\r\n", header->sgb_flag ? "Yes": "No");
+
+
+    xil_printf("  Type:              %s\r\n", get_cartridge_type_string(header->cartridge_type));
+
+
+    xil_printf("  ROM Size:          ", header->rom_size);
+    if (header->rom_size >= 0x00 and header->rom_size <= 0x08)
+        xil_printf("%d KiB (%d banks)", 1 << (5 + header->rom_size), 1 << (1 + header->rom_size));
+    else
+        xil_printf("%02x not recognized.", header->rom_size);
     xil_printf("\r\n");
 
-    xil_printf("  RAM Size: ", header->ram_size);
+
+    xil_printf("  RAM Size:          ", header->ram_size);
     switch (header->ram_size)
     {
         case 0x00: xil_printf("No RAM"); break;
-        case 0x01: xil_printf("Unused"); break;
         case 0x02: xil_printf("8 KiB (1 banks"); break;
         case 0x03: xil_printf("32 KiB (4 banks)"); break;
         case 0x04: xil_printf("128 KiB (16 banks)"); break;
         case 0x05: xil_printf("64 KiB (8 banks)"); break;
     }
-    xil_printf("\r\n\r\n");
+    xil_printf("\r\n");
+
+
+    xil_printf(
+        "  Destination Code:  %s\r\n",
+        (header->destination_code == 0x00) ? "Japan": "Overseas"
+    );
+
+
+    xil_printf(
+        "  Old Licensee Code: %s\r\n",
+        get_old_licensee_code_string(header->old_licensee_code)
+    );
+
+
+    xil_printf("  Version:           %02x\r\n", header->rom_version);
+
+
+    xil_printf("  Header Checksum:   %02x\r\n", header->header_checksum);
+
+
+    xil_printf(
+        "  Global Checksum:   %02x %02x\r\n",
+        header->global_checksum[0], header->global_checksum[1]
+    );
+
+    xil_printf("\r\n");
 
     xil_printf("Full Header:");
     for (unsigned i = 0; i < sizeof(*header); ++i)
     {
-        if (i % 0x10 == 0) xil_printf("\r\n  ");
+        if (i % 0x10 == 0) xil_printf("\r\n  0x%04x: ", HEADER_BASE_ADDRESS + i);
         xil_printf(" %02x", ((uint8_t*)header)[i]);
     }
     xil_printf("\r\n");
@@ -129,13 +145,10 @@ void cli_read_rom()
     uint8_t cartridge_type = header->cartridge_type;
     unsigned num_banks = 1 << (header->rom_size + 1);
 
-    // These don't line up nicely, so we gotta check them manually.
-    switch (num_banks)
+    if (!(header->rom_size >= 0x00 and header->rom_size <= 0x08))
     {
-        case 0x52: num_banks = 72; break;
-        case 0x53: num_banks = 80; break;
-        case 0x54: num_banks = 96; break;
         // TODO: Invalid num_banks handling
+        return;
     }
 
     // Technically we already read bank 0, but can't hurt to read it again.
@@ -143,26 +156,26 @@ void cli_read_rom()
     {
         switch (cartridge_type)
         {
-            case 0x01: // MBC1
-            case 0x02: // MBC1 + RAM
-            case 0x03: // MBC1 + RAM + Battery
+            case cartridge_type::MBC1:
+            case cartridge_type::MBC1_RAM:
+            case cartridge_type::MBC1_RAM_BATTERY:
                 mbc1::read_rom(bank);
                 break;
 
-            case 0x0f: // MBC3 + Timer + Battery
-            case 0x10: // MBC3 + Timer + RAM + Battery
-            case 0x11: // MBC3
-            case 0x12: // MBC3 + RAM
-            case 0x13: // MBC3 + RAM + Battery
+            case cartridge_type::MBC3:
+            case cartridge_type::MBC3_RAM:
+            case cartridge_type::MBC3_RAM_BATTERY:
+            case cartridge_type::MBC3_RTC_BATTERY:
+            case cartridge_type::MBC3_RTC_RAM_BATTERY:
                 mbc3::read_rom(bank);
                 break;
 
-            case 0x19: // MBC5
-            case 0x1a: // MBC5 + RAM
-            case 0x1b: // MBC5 + RAM + Battery
-            case 0x1c: // MBC5 + Rumble
-            case 0x1d: // MBC5 + Rumble + RAM
-            case 0x1e: // MBC5 + Rumble + RAM + Battery
+            case cartridge_type::MBC5:
+            case cartridge_type::MBC5_RAM:
+            case cartridge_type::MBC5_RAM_BATTERY:
+            case cartridge_type::MBC5_RUMBLE:
+            case cartridge_type::MBC5_RUMBLE_RAM:
+            case cartridge_type::MBC5_RUMBLE_RAM_BATTERY:
                 mbc5::read_rom(bank);
                 break;
         }
@@ -191,36 +204,37 @@ void cli_read_ram()
         case 0x03: num_banks = 4; break;
         case 0x04: num_banks = 16; break;
         case 0x05: num_banks = 8; break;
-        // TODO: Invalid num_banks handling
+
+        default:
+            // TODO: Invalid num_banks handling
+            return;
     }
 
     for (unsigned bank = 0; bank < num_banks; ++bank)
     {
         switch (cartridge_type)
         {
-            // case 0x0f:   // MBC3 + Timer + Battery
-            case 0x10:      // MBC3 + Timer + RAM + Battery
-            // case 0x11:   // MBC3
-            case 0x12:      // MBC3 + RAM
-            case 0x13:      // MBC3 + RAM + Battery
+            case cartridge_type::MBC3_RAM:
+            case cartridge_type::MBC3_RAM_BATTERY:
+            case cartridge_type::MBC3_RTC_RAM_BATTERY:
                 mbc3::read_ram(bank);
                 break;
 
-            // case 0x19:   // MBC5
-            case 0x1a:      // MBC5 + RAM
-            case 0x1b:      // MBC5 + RAM + Battery
-            // case 0x1c:   // MBC5 + Rumble
-            case 0x1d:      // MBC5 + Rumble + RAM
-            case 0x1e:      // MBC5 + Rumble + RAM + Battery
+            case cartridge_type::MBC5_RAM:
+            case cartridge_type::MBC5_RAM_BATTERY:
+            // NOTE: bit 3 of RAMB on rumble cartridges turn the motor on/off and are not ram bank related.
+            // TODO: case cartridge_type::MBC5_RUMBLE_RAM:
+            // TODO: case cartridge_type::MBC5_RUMBLE_RAM_BATTERY:
                 mbc5::read_ram(bank);
                 break;
-            // TODO: Invalid MBC handling
+
+            default:
+                // TODO: Invalid cartridge type handling
+                return;
         }
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
-        {
             xil_printf("%c", cartridge_buffer[address]);
-        }
     }
 }
 
@@ -238,13 +252,17 @@ void cli_write_ram()
         case 0x03: num_banks = 4; break;
         case 0x04: num_banks = 16; break;
         case 0x05: num_banks = 8; break;
+
+        default:
+            // TODO: Invalid num_banks handling
+            return;
     }
 
     switch (cartridge_type)
     {
-        case 0x10: // MBC3 + Timer + RAM + Battery
-        case 0x12: // MBC3 + RAM
-        case 0x13: // MBC3 + RAM + Battery
+        case cartridge_type::MBC3_RAM:
+        case cartridge_type::MBC3_RAM_BATTERY:
+        case cartridge_type::MBC3_RTC_RAM_BATTERY:
             for (unsigned bank = 0; bank < num_banks; ++bank)
             {
                 for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
@@ -262,6 +280,10 @@ void cli_write_ram()
                 mbc3::write_ram(bank);
             }
             break;
+
+        default:
+            // TODO: Invalid cartridge type handling
+            return;
     }
 }
 
@@ -273,10 +295,14 @@ void cli_read_rtc()
 
     switch (header->cartridge_type)
     {
-        case 0x0f: // MBC3 + Timer + Battery
-        case 0x10: // MBC3 + Timer + RAM + Battery
+        case cartridge_type::MBC3_RTC_BATTERY:
+        case cartridge_type::MBC3_RTC_RAM_BATTERY:
             mbc3::read_rtc();
             break;
+
+        default:
+            // TODO: Invalid cartridge type handling
+            return;
     }
 
     // Registers are selected and then appear on the whole address range.

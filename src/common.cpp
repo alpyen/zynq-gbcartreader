@@ -12,9 +12,5 @@ void die(const char* message)
 
 bool is_printable(const char letter)
 {
-    return (letter == ' ')
-        || (letter >= 'a' && letter <= 'z')
-        || (letter >= 'A' && letter <= 'Z')
-        || (letter >= '0' && letter <= '9')
-    ;
+    return (letter >= 0x20) && (letter <= 0x7e);
 }
