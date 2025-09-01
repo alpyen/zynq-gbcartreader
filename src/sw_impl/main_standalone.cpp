@@ -15,12 +15,12 @@ int main()
         die("PMOD GPIO Initialization failed.\r\n");
 
     const char* commands[] = {
-        "help", "echo", "read header", "read rom",
+        "help", "parse header", "read rom",
         "read ram", "write ram", "read rtc", "write rtc"
     };
 
     void (* const handlers[])(void) = {
-        cli_help, cli_echo, cli_read_header, cli_read_rom,
+        cli_help, cli_parse_header, cli_read_rom,
         cli_read_ram, cli_write_ram, cli_read_rtc, cli_write_rtc
     };
 
@@ -28,8 +28,7 @@ int main()
 
     while (true)
     {
-        if (echo) xil_printf("> ");
-        uart_readline(XPAR_UART0_BASEADDR, line_buffer, sizeof(line_buffer), echo);
+        uart_readline(XPAR_UART0_BASEADDR, line_buffer, sizeof(line_buffer));
 
         bool valid_command = false;
         for (uint8_t i = 0; i < arraysizeof(commands); ++i)

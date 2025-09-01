@@ -6,8 +6,6 @@
 #include "cartridge.h"
 #include "../common.h"
 
-bool echo = false;
-
 void cli_help()
 {
     xil_printf(
@@ -17,38 +15,20 @@ void cli_help()
         "Available commands:\r\n"
         "-------------------\r\n"
         "help          Display this help page\r\n"
-        "echo          Echo commands in a prompt and change data output to hex view\r\n"
-        "read header   Read cartridge header and echo it in binary or parsed format\r\n"
-        "read rom      Read cartridge rom and echo it in binary or hex\r\n"
-        "read ram      Read cartridge ram (if available) and echo it in binary or hex\r\n"
+        "parse header  Read cartridge header and parse into readable form\r\n"
+        "read rom      Read cartridge rom and echo it in binary\r\n"
+        "read ram      Read cartridge ram (if available) and echo it in binary\r\n"
         "write ram     Write cartridge ram (if available) from binary terminal data\r\n"
-        "read rtc      Read cartridge RTC (if available) and echo it in binary or hex\r\n"
+        "read rtc      Read cartridge RTC (if available) and echo it in binary\r\n"
         "write rtc     Write cartridge RTC (if available) from binary terminal data\r\n"
     );
 }
 
-void cli_echo()
-{
-    // "echo" enables a command prompt and provides a more user friendly way
-    // to interface with the application. It also changes the data output to
-    // a hex view. If you want to dump roms/rams, disable echo and pipe
-    // straight to a file.
-    echo = !echo;
-}
-
-void cli_read_header()
+void cli_parse_header()
 {
     // All MBCs power up in such a state that mbc1::read_rom(0) will read the first bank
     // which contains the header for further identification (when reading other banks or RAM).
     mbc1::read_rom(0);
-
-    if (!echo)
-    {
-        for (unsigned address = HEADER_BASE_ADDRESS; address < HEADER_BASE_ADDRESS + sizeof(cartridge_header); ++address)
-            xil_printf("%c", cartridge_buffer[address]);
-
-        return;
-    }
 
     cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
 
@@ -188,20 +168,8 @@ void cli_read_rom()
         }
 
         for (unsigned address = 0; address < ROM_BANK_SIZE; ++address)
-        {
-            if (echo)
-            {
-                if (address % 16 == 0)
-                    xil_printf("\r\n%08x:", (bank << 14) + address);
-
-                xil_printf(" %02x", cartridge_buffer[address]);
-            }
-            else
-                xil_printf("%c", cartridge_buffer[address]);
-        }
+            xil_printf("%c", cartridge_buffer[address]);
     }
-
-    if (echo) xil_printf("\r\n");
 }
 
 void cli_read_ram()
@@ -251,19 +219,9 @@ void cli_read_ram()
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
         {
-            if (echo)
-            {
-                if (address % 16 == 0)
-                xil_printf("\r\n%08x:", (bank << 13) + address);
-
-                xil_printf(" %02x", cartridge_buffer[address]);
-            }
-            else
-                xil_printf("%c", cartridge_buffer[address]);
+            xil_printf("%c", cartridge_buffer[address]);
         }
     }
-
-    if (echo) xil_printf("\r\n");
 }
 
 void cli_write_ram()
@@ -321,30 +279,10 @@ void cli_read_rtc()
             break;
     }
 
-    if (echo)
-    {
-        rtc_data* data = (rtc_data*)&cartridge_buffer;
-        uint32_t days = ((uint32_t)data->day_halt_carry.day_higher << 8) | data->day_lower;
-        xil_printf(
-            "RTC: %u days, %u minutes, %u seconds\r\n",
-            days, data->minutes, data->seconds
-        );
-        xil_printf(
-            "HALT: %u, Day Counter Carry: %u",
-            data->day_halt_carry.halt, data->day_halt_carry.day_counter_carry
-        );
-    }
-    else
-    {
-        // Registers are selected and then appear on the whole address range.
-        // mbc3::read_rtc just lists them sequentially.
-        for (unsigned address = 0; address < 5; ++address)
-        {
-            xil_printf("%c", cartridge_buffer[address]);
-        }
-    }
-
-    if (echo) xil_printf("\r\n");
+    // Registers are selected and then appear on the whole address range.
+    // mbc3::read_rtc just lists them sequentially.
+    for (unsigned address = 0; address < 5; ++address)
+        xil_printf("%c", cartridge_buffer[address]);
 }
 
 void cli_write_rtc()
