@@ -47,7 +47,7 @@ and run: `vitis -s regenerate.py`
 > Note: This script has to be run from Vitis, it will not work with your local python installation.
 
 The script takes care of several things:
-1. Performs sanity checks to see if the execution environment is correct and if the 
+1. Performs sanity checks to see if the execution environment is correct and if the
    XSA files have been exported, otherwise the platform generation will fail.
 2. Delete **everything** except the regenerate.py inside the vitis subfolder to remove
    a potentionally old workspace.
@@ -56,3 +56,13 @@ The script takes care of several things:
 
 Once the regeneration is complete you can open the Vitis GUI and set the workspace
 to the vitis subfolder. Now you're ready to build the applications and deploy them.
+
+
+___
+
+### Acknowledgements
+
+This project heavily relies on the work of others who have reverse engineered and documented
+the inner workings of the Game Boy and its cartridges and/or compiled existing information:
+- Pan Docs - https://github.com/gbdev/pandocs
+- Game Boy: Complete Technical Reference - https://github.com/Gekkio/gb-ctr
