@@ -220,6 +220,7 @@ namespace mbc3
         {
             _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
 
+            // TODO: There is no CSn = 1, move out of the loop or CSn=1 at the end of the floor?
             pmod_state.CSn = 0;
             write_pmod();
 
@@ -266,6 +267,8 @@ namespace mbc3
             pmod_state.RDn = 0;
             write_pmod();
 
+            // NOTE: It is recommended to wait 4 microsecods when accessing RTC registers
+            //       which we do automatically by sleeping 1 us per write_pmod().
             _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS);
             cartridge_buffer[index] = _shiftin_data();
 

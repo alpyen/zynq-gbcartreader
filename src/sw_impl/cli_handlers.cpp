@@ -156,6 +156,11 @@ void cli_read_rom()
     {
         switch (cartridge_type)
         {
+            // Even though the ROM-only has no MBC and therefore no registers,
+            // we can simply use the MBC1 methods as the register writes will
+            // not cause any harm since the WRn pin is unconnected on these cartridges.
+            case cartridge_type::ROM:
+
             case cartridge_type::MBC1:
             case cartridge_type::MBC1_RAM:
             case cartridge_type::MBC1_RAM_BATTERY:
@@ -271,6 +276,8 @@ void cli_write_ram()
                         TODO: This is just a rudimentary flow control implementation
                             to not overrun the RX buffer on the Zynq when waiting
                             for the GPIO to write the data.
+
+                        TODO: Do not hardcore XPAR_UART0_BASEADDR
                     */
                     uint8_t byte = XUartPs_RecvByte(XPAR_UART0_BASEADDR);
                     cartridge_buffer[address] = byte;

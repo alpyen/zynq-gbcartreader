@@ -46,7 +46,7 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
 
                 print(f"\rSending data...{(bank*8192+(burst+1)*64)//1024}K/{len(ram)//1024}K", end="", flush=True, file=sys.stderr)
 
-        print("...done!")
+        print("...done!", file=sys.stderr)
         exit(0)
 
     bytes_received = 0
