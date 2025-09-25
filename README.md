@@ -13,6 +13,12 @@ the following design iterations will make use of a more sophisticated architectu
 by offloading the board communication to an IP core and moving commands and responses
 around with AXI interfaces.
 
+<div align="center">
+   <img width="58.4%" src="docs/front.jpg" />
+   <img width="36.6%" src="docs/back.jpg" /><br>
+   A (badly) handsoldered demonstration of this project with a Pokémon Red cartridge.<br>
+   Left is Top, Right is Bottom.
+</div>
 
 ## Quick Start
 
