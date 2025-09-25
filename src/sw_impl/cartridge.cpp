@@ -348,6 +348,48 @@ namespace mbc5
 
         reset_cartridge();
     }
+
+    void write_ram(uint8_t bank)
+    {
+        _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+        _write_register(registers::RAMB, bank);
+
+        for (uint16_t address = 0; address < RAM_BANK_SIZE; ++address)
+        {
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
+
+            // TODO: There is no CSn = 1, move out of the loop or CSn=1 at the end of the floor?
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            pmod_state.DATA_OUT_RCLK = 0;
+
+            for (unsigned i = 0; i < 8; ++i)
+            {
+                pmod_state.DATA_OUT_SCLK = 0;
+                pmod_state.DATA_OUT_SDATA = (cartridge_buffer[address] >> (7-i)) & 0b1;
+                write_pmod();
+
+                pmod_state.DATA_OUT_SCLK = 1;
+                write_pmod();
+            }
+
+            pmod_state.DATA_OUT_RCLK = 1;
+            write_pmod();
+
+            pmod_state.DATA_OUT_OEn = 0;
+            pmod_state.WRn = 0;
+            write_pmod();
+
+            pmod_state.WRn = 1;
+            write_pmod();
+
+            pmod_state.DATA_OUT_OEn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
+    }
 }
 
 const char* get_cartridge_type_string(uint8_t cartridge_type)

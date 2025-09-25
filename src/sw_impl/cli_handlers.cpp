@@ -1,11 +1,14 @@
 #include "cli_handlers.h"
 
+#include <cstdint>
 #include <xuartps.h>
 #include <xil_printf.h>
 #include <string.h>
 
 #include "cartridge.h"
 #include "../common.h"
+
+// TODO: Replace all bytewise xil_printfs with custom implementation.
 
 void cli_help()
 {
@@ -227,9 +230,12 @@ void cli_read_ram()
 
             case cartridge_type::MBC5_RAM:
             case cartridge_type::MBC5_RAM_BATTERY:
-            // NOTE: bit 3 of RAMB on rumble cartridges turn the motor on/off and are not ram bank related.
-            // TODO: case cartridge_type::MBC5_RUMBLE_RAM:
-            // TODO: case cartridge_type::MBC5_RUMBLE_RAM_BATTERY:
+
+            // Bit 3 of RAMB controls the rumble motor on these cartridges but since
+            // the cartridge will not have so many banks to accidentally trigger the rumble
+            // this works just as well.
+            case cartridge_type::MBC5_RUMBLE_RAM:
+            case cartridge_type::MBC5_RUMBLE_RAM_BATTERY:
                 mbc5::read_ram(bank);
                 break;
 
@@ -285,6 +291,24 @@ void cli_write_ram()
                 }
 
                 mbc3::write_ram(bank);
+            }
+            break;
+
+        case cartridge_type::MBC5_RAM:
+        case cartridge_type::MBC5_RAM_BATTERY:
+        case cartridge_type::MBC5_RUMBLE_RAM:
+        case cartridge_type::MBC5_RUMBLE_RAM_BATTERY:
+            for (unsigned bank = 0; bank < num_banks; ++bank)
+            {
+                for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
+                {
+                    // NOTE: See MBC3 case!
+                    uint8_t byte = XUartPs_RecvByte(XPAR_UART0_BASEADDR);
+                    cartridge_buffer[address] = byte;
+                    XUartPs_SendByte(XPAR_UART0_BASEADDR, byte);
+                }
+
+                mbc5::write_ram(bank);
             }
             break;
 

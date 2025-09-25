@@ -108,7 +108,7 @@ namespace mbc5
 {
     void read_rom(uint16_t bank);
     void read_ram(uint8_t bank);
-    // TODO: void write_ram();
+    void write_ram(uint8_t bank);
 }
 
 const char* get_cartridge_type_string(uint8_t cartridge_type);
