@@ -322,6 +322,7 @@ void cli_read_rtc()
 {
     mbc1::read_rom(0);
 
+    // TODO: Refactor out header reading from all CLI handlers
     cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
 
     switch (header->cartridge_type)
@@ -344,5 +345,28 @@ void cli_read_rtc()
 
 void cli_write_rtc()
 {
-    xil_printf("Write RTC handler called.\r\n");
+    mbc1::read_rom(0);
+
+    cartridge_header* header = (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
+
+    const uint8_t RTC_REGISTER_COUNT = 5;
+
+    switch (header->cartridge_type)
+    {
+        case cartridge_type::MBC3_RTC_BATTERY:
+        case cartridge_type::MBC3_RTC_RAM_BATTERY:
+            for (unsigned index = 0; index < RTC_REGISTER_COUNT; ++index)
+            {
+                uint8_t byte = XUartPs_RecvByte(XPAR_UART0_BASEADDR);
+                cartridge_buffer[index] = byte;
+                XUartPs_SendByte(XPAR_UART0_BASEADDR, byte);
+            }
+
+            mbc3::write_rtc();
+            break;
+
+        default:
+            // TODO: Invalid cartridge type handling
+            return;
+    }
 }

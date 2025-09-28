@@ -30,9 +30,9 @@ a list of the ones that are available.
 | Type   | Status | Verified On                                                                                  |
 | :----: | :----: | :------------------------------------------------------------------------------------------ |
 | No MBC |   ✅   | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
-| MBC1   |  (✅)  | Super Mario Land (DMG-ML-NOE)                                                                |
+| MBC1   |  WIP (✅)  | Super Mario Land (DMG-ML-NOE)                                                                |
 | MBC2   |  🚫   | -                                                                                            |
-| MBC3   |   ✅   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
+| MBC3   |  WIP (✅)   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
 | MBC5   |   ✅   | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
 | MMM01  |  🚫  | -                                                                                            |
 
@@ -40,7 +40,7 @@ a list of the ones that are available.
 - (✅) compatible but not verified or only partially verified<br>
 - 🚫 not implemented yet
 
-Some exotic types like MBC6, MBC7, Pocket Camera, BANDAI Tama5, HuC1 and HuC3 exist but
+Some exotic types like MBC6, MBC7, Pocket Camera, Bandai TAMA5, HuC1 and HuC3 exist but
 are not supported as they are very uncommon and most games simply use No MBC, MBC 1, 3 or 5.
 
 

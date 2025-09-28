@@ -48,6 +48,18 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
 
         print("...done!", file=sys.stderr)
         exit(0)
+    elif command == "write rtc":
+        rtc = sys.stdin.buffer.read()
+
+        print(f"Sending data...", end="", flush=True, file=sys.stderr)
+
+        link.write(rtc)
+        while link.in_waiting != len(rtc):
+            pass
+        link.read(link.in_waiting)
+
+        print("done!", file=sys.stderr)
+        exit(0)
 
     bytes_received = 0
 
