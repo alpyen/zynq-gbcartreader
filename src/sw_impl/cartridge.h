@@ -4,8 +4,8 @@
 
 const uint16_t HEADER_BASE_ADDRESS = 0x0100;
 
-const unsigned ROM_BANK_SIZE = 0x4000;
-const unsigned RAM_BANK_SIZE = 0x2000;
+const uint32_t ROM_BANK_SIZE = 0x4000;
+const uint32_t RAM_BANK_SIZE = 0x2000;
 
 const uint8_t NINTENDO_LOGO[0x30] = {
     0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
@@ -90,6 +90,7 @@ struct rtc_data
 
 namespace mbc1
 {
+    cartridge_header* read_header();
     void read_rom(uint8_t bank);
     // TODO: void read_ram(uint8_t bank);
     // TODO: void write_ram();
@@ -101,7 +102,7 @@ namespace mbc3
     void read_ram(uint8_t bank);
     void write_ram(uint8_t bank);
     void read_rtc();
-    void write_rtc();
+    // TODO: void write_rtc();
 }
 
 namespace mbc5

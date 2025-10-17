@@ -93,6 +93,8 @@ void _write_register(uint16_t register_address, uint8_t value)
     _shiftout_data(value);
 }
 
+// TODO: Add assertions that cartridge is always in reset state before attempting operations.
+
 namespace mbc1
 {
     enum registers: uint16_t
@@ -111,6 +113,31 @@ namespace mbc1
         _write_register(registers::MODE, 0);
 
         reset_pmod();
+    }
+
+    /* NOTE: This function reads the header into the cartridge buffer and returns a pointer to it.
+             The pointer is invalid as soon as new data is being written into the cartridge buffer. */
+    cartridge_header* read_header()
+    {
+        _write_register(registers::MODE, 0);
+
+        for (uint16_t address = HEADER_BASE_ADDRESS;
+            address < HEADER_BASE_ADDRESS + sizeof(cartridge_header);
+            ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(address);
+            cartridge_buffer[address] = _shiftin_data();
+
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+
+        reset_cartridge();
+
+        return (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
     }
 
     void read_rom(uint8_t bank)
@@ -270,8 +297,10 @@ namespace mbc3
             pmod_state.RDn = 0;
             write_pmod();
 
-            // NOTE: It is recommended to wait 4 microsecods when accessing RTC registers
-            //       which we do automatically by sleeping 1 us per write_pmod().
+            /*
+                NOTE: It is recommended to wait 4 microsecods when accessing RTC registers
+                      which we do automatically by sleeping 1 us per write_pmod().
+            */
             _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS);
             cartridge_buffer[index] = _shiftin_data();
 
@@ -282,14 +311,14 @@ namespace mbc3
         reset_cartridge();
     }
 
-    void write_rtc()
-    {
-        _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
+    // void write_rtc()
+    // {
+    //     _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
 
-        // TODO: Set HALT bit before writing. Write can clash? Mulitple needed?
+    //     // TODO: Set HALT bit before writing. Write can clash? Mulitple needed?
 
-        reset_cartridge();
-    }
+    //     reset_cartridge();
+    // }
 }
 
 namespace mbc5

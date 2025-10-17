@@ -5,7 +5,7 @@ ___
 # ZYNQ GBCartReader - Read & Write GameBoy cartridges
 
 This project is aimed to dive into FPGA SoCs and embedded software development
-by desining a system that's able to read and write to gameboy cartridges with
+by designing a system that's able to read and write to gameboy cartridges with
 a custom designed PCB which interfaces between the FPGA and the game cartridge.
 
 Starting from a very basic bitbanging implementation solely running on the ARM core,
@@ -27,14 +27,14 @@ There are a couple of different cartridge types that mostly distinguish between 
 mapper chip and additional periphery such as RAM, Real-Time-Clock, Battery and more. Here's
 a list of the ones that are available.
 
-| Type   | Status | Verified On                                                                                  |
-| :----: | :----: | :------------------------------------------------------------------------------------------ |
-| No MBC |   ✅   | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
-| MBC1   |  WIP (✅)  | Super Mario Land (DMG-ML-NOE)                                                                |
-| MBC2   |  🚫   | -                                                                                            |
-| MBC3   |  WIP (✅)   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
-| MBC5   |   ✅   | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
-| MMM01  |  🚫  | -                                                                                            |
+|  Type  |  Status  | Verified On                                                                                  |
+| :----: | :------: | :------------------------------------------------------------------------------------------- |
+| No MBC |    ✅    | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
+|  MBC1  | WIP (✅) | Super Mario Land (DMG-ML-NOE)                                                                |
+|  MBC2  |   🚫    | -                                                                                            |
+|  MBC3  | WIP (✅) | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
+|  MBC5  |    ✅    | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
+| MMM01  |   🚫    | -                                                                                            |
 
 - ✅ compatible and verified<br>
 - (✅) compatible but not verified or only partially verified<br>
