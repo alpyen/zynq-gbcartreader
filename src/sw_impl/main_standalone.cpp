@@ -30,9 +30,6 @@ int main()
     {
         uart_readline(XPAR_UART0_BASEADDR, line_buffer, sizeof(line_buffer));
 
-        // TODO: Parse WriteRAM/WriteRTC bytes to write and pass it to cli_handler.
-        // This was the function does not have to do additional IO.
-
         bool valid_command = false;
         for (uint8_t i = 0; i < arraysizeof(commands); ++i)
             if (!strcmp(line_buffer, commands[i]))

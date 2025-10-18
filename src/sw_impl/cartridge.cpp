@@ -93,8 +93,7 @@ void _write_register(uint16_t register_address, uint8_t value)
     _shiftout_data(value);
 }
 
-// TODO: Add assertions that cartridge is always in reset state before attempting operations.
-
+// NOTE: The cartridge and pmod_state are REQUIRED to be reset to a known state before operating on them.
 namespace mbc1
 {
     enum registers: uint16_t
@@ -119,6 +118,8 @@ namespace mbc1
              The pointer is invalid as soon as new data is being written into the cartridge buffer. */
     cartridge_header* read_header()
     {
+        reset_cartridge();
+
         _write_register(registers::MODE, 0);
 
         for (uint16_t address = HEADER_BASE_ADDRESS;
@@ -135,13 +136,13 @@ namespace mbc1
             write_pmod();
         }
 
-        reset_cartridge();
-
         return (cartridge_header*)&cartridge_buffer[HEADER_BASE_ADDRESS];
     }
 
     void read_rom(uint8_t bank)
     {
+        reset_cartridge();
+
         uint16_t bank_base_address = ROM_BANK_AREA1_BASE_ADDRESS;
 
         if ((bank & 0b11111) != 0)
@@ -162,8 +163,6 @@ namespace mbc1
             pmod_state.RDn = 1;
             write_pmod();
         }
-
-        reset_cartridge();
     }
 }
 
@@ -191,6 +190,8 @@ namespace mbc3
 
     void read_rom(uint8_t bank)
     {
+        reset_cartridge();
+
         uint16_t bank_base_address = ROM_BANK_AREA1_BASE_ADDRESS;
 
         if (bank != 0)
@@ -210,11 +211,12 @@ namespace mbc3
             write_pmod();
         }
 
-        reset_cartridge();
     }
 
     void read_ram(uint8_t bank)
     {
+        reset_cartridge();
+
         _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
         _write_register(registers::RAMB_RTCRS, bank);
 
@@ -234,12 +236,12 @@ namespace mbc3
             pmod_state.RDn = 1;
             write_pmod();
         }
-
-        reset_cartridge();
     }
 
     void write_ram(uint8_t bank)
     {
+        reset_cartridge();
+
         _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
         _write_register(registers::RAMB_RTCRS, bank);
 
@@ -276,12 +278,12 @@ namespace mbc3
             pmod_state.DATA_OUT_OEn = 1;
             write_pmod();
         }
-
-        reset_cartridge();
     }
 
     void read_rtc()
     {
+        reset_cartridge();
+
         _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
 
         const uint8_t RTC_REGISTERS_COUNT = 5;
@@ -307,17 +309,15 @@ namespace mbc3
             pmod_state.RDn = 1;
             write_pmod();
         }
-
-        reset_cartridge();
     }
 
     // void write_rtc()
     // {
+    //     reset_cartridge();
     //     _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
 
     //     // TODO: Set HALT bit before writing. Write can clash? Mulitple needed?
 
-    //     reset_cartridge();
     // }
 }
 
@@ -345,6 +345,8 @@ namespace mbc5
 
     void read_rom(uint16_t bank)
     {
+        reset_cartridge();
+
         uint16_t bank_base_address = ROM_BANK_AREA2_BASE_ADDRESS;
 
         _write_register(registers::ROMB1, bank & 0xff);
@@ -362,11 +364,12 @@ namespace mbc5
             write_pmod();
         }
 
-        reset_cartridge();
     }
 
     void read_ram(uint8_t bank)
     {
+        reset_cartridge();
+
         _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
         _write_register(registers::RAMB, bank);
 
@@ -387,11 +390,12 @@ namespace mbc5
             write_pmod();
         }
 
-        reset_cartridge();
     }
 
     void write_ram(uint8_t bank)
     {
+        reset_cartridge();
+
         _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
         _write_register(registers::RAMB, bank);
 
@@ -428,8 +432,6 @@ namespace mbc5
             pmod_state.DATA_OUT_OEn = 1;
             write_pmod();
         }
-
-        reset_cartridge();
     }
 }
 

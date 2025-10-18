@@ -130,7 +130,6 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
         log("...done!")
 
     elif "write" in command:
-        # TODO: Send WriteRAM/WriteRTC bytes with command and not afterwards.
         log("Sending size...", "")
 
         buffer = sys.stdin.buffer.read()
