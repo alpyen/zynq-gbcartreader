@@ -11,10 +11,10 @@
 /*                                                   */
 /*---------------------------------------------------*/
 
-/* NOTE: This is a modified version of the original xil_printf.h to implement sprintf.
-         This sprintf takes a pointer to a char* and advances it further. */
+/* NOTE: This is a modified version of the original xil_printf.c to implement sprintf
+         (with pointer advancing) and wrap the xil_printf to use the same function body. */
 
-#include "xil_sprintf.h"
+#include "print.h"
 #include "xil_types.h"
 #include "xil_assert.h"
 #include "bspconfig.h"
@@ -22,10 +22,21 @@
 #include <string.h>
 #include <stdarg.h>
 
-inline void outbyte_to_string(char** dest, char c)
+// When no dest is passed, the data is being output to stdout.
+// This way we can bundle xil_sprintf and xil_sprintf to use the same implementation.
+// We simply wrap xil_sprintf in xil_sprintf but pass 0 as dest, that way
+// all writes to the dest buffer will be output instead.
+inline void writeout(char** dest, char c)
 {
-	**dest = c;
-	(*dest)++;
+	if (dest)
+	{
+		**dest = c;
+		(*dest)++;
+	}
+	else
+	{
+		outbyte(c);
+	}
 }
 
 
@@ -80,7 +91,7 @@ static void padding(char** dest, const s32 l_flag, const struct params_s *par)
 		i = (par->len);
 		for (; i < (par->num1); i++) {
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-			outbyte_to_string(dest, par->pad_character);
+			writeout(dest, par->pad_character);
 #endif
 		}
 	}
@@ -104,7 +115,7 @@ static void outs(char** dest, const charptr lp, struct params_s *par)
 		while (((*LocalPtr) != (char8)0) && ((par->num2) != 0)) {
 			(par->num2)--;
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-			outbyte_to_string(dest, *LocalPtr);
+			writeout(dest, *LocalPtr);
 #endif
 			LocalPtr += 1;
 		}
@@ -164,7 +175,7 @@ static void outnum(char** dest, const s32 n, const s32 base, struct params_s *pa
 	padding(dest, !(par->left_flag), par);
 	while (&outbuf[i] >= outbuf) {
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-		outbyte_to_string(dest, outbuf[i] );
+		writeout(dest, outbuf[i] );
 #endif
 		i--;
 	}
@@ -218,7 +229,7 @@ static void outnum1(char** dest, const s64 n, const s32 base, params_t *par)
 	par->len = (s32)strlen(outbuf);
 	padding(dest, !(par->left_flag), par);
 	while (&outbuf[i] >= outbuf) {
-		outbyte_to_string(dest, outbuf[i] );
+		writeout(dest, outbuf[i] );
 		i--;
 	}
 	padding(dest, par->left_flag, par);
@@ -248,6 +259,17 @@ static s32 getnum(charptr *linep)
 
 	*linep = ((charptr)(cptr));
 	return (n);
+}
+
+void xil_printf(const char8* ctrl1, ...)
+{
+	va_list argp;
+
+	va_start(argp, ctrl1);
+
+	xil_vsprintf(0, ctrl1, argp);
+
+	va_end(argp);
 }
 
 /*****************************************************************************/
@@ -300,7 +322,7 @@ void xil_vsprintf(char** dest, const char8 *ctrl1, va_list argp)
 		/* format control is found.                    */
 		if (*ctrl != '%') {
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-			outbyte_to_string(dest, *ctrl);
+			writeout(dest, *ctrl);
 #endif
 			ctrl += 1;
 			continue;
@@ -340,7 +362,7 @@ try_next:
 		switch (tolower(ch)) {
 			case '%':
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-				outbyte_to_string(dest, '%');
+				writeout(dest, '%');
 #endif
 				Check = 1;
 				break;
@@ -355,7 +377,7 @@ try_next:
 					width = va_arg(argp, u32);
 					string = va_arg(argp, const char *);
 					for (index = 0; index < width && string[index] != '\0' ; index++) {
-						outbyte_to_string(dest, string[index]);
+						writeout(dest, string[index]);
 					}
 					ctrl += 2;
 				} else {
@@ -423,7 +445,7 @@ try_next:
 
 			case 'c':
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-				outbyte_to_string(dest, (char8)va_arg( argp, s32));
+				writeout(dest, (char8)va_arg( argp, s32));
 #endif
 				Check = 1;
 				break;
@@ -433,28 +455,28 @@ try_next:
 				switch (*ctrl) {
 					case 'a':
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-						outbyte_to_string(dest, ((char8)0x07));
+						writeout(dest, ((char8)0x07));
 #endif
 						break;
 					case 'h':
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-						outbyte_to_string(dest, ((char8)0x08));
+						writeout(dest, ((char8)0x08));
 #endif
 						break;
 					case 'r':
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-						outbyte_to_string(dest, ((char8)0x0D));
+						writeout(dest, ((char8)0x0D));
 #endif
 						break;
 					case 'n':
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-						outbyte_to_string(dest, ((char8)0x0D));
-						outbyte_to_string(dest, ((char8)0x0A));
+						writeout(dest, ((char8)0x0D));
+						writeout(dest, ((char8)0x0A));
 #endif
 						break;
 					default:
 #if defined(STDOUT_BASEADDRESS) || defined(VERSAL_PLM) || defined(SDT) || defined(SPARTANUP_PLM)
-						outbyte_to_string(dest, *ctrl);
+						writeout(dest, *ctrl);
 #endif
 						break;
 				}

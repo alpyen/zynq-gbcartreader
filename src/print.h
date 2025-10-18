@@ -4,10 +4,10 @@
 * SPDX-License-Identifier: MIT
 *******************************************************************************/
 
-/* NOTE: This is a modified version of the original xil_printf.h to implement sprintf.
-         This sprintf takes a pointer to a char* and advances it further. */
- #ifndef XIL_SPRINTF_H
- #define XIL_SPRINTF_H
+/* NOTE: This is a modified version of the original xil_printf.h to implement sprintf
+         (with pointer advancing) and wrap the xil_printf to use the same function body. */
+ #ifndef PRINT_H
+ #define PRINT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,11 +46,13 @@ typedef s32 (*func_ptr)(int c);
 
 /************************** Function Prototypes ******************************/
 /**< prints the statement */
+void xil_printf(const char8* ctrl1, ...);
 void xil_sprintf(char** dest, const char8 *ctrl1, ...);
 /**< This routine is equivalent to vprintf routine */
 void xil_vsprintf(char** dest, const char8 *ctrl1, va_list argp);
 void print( const char8 *ptr);
-void outbyte_to_string (char** dest, char c); /**< To send byte */
+void writeout (char** dest, char c); /**< To send byte */
+extern void outbyte (char c); /**< To send byte */
 extern char inbyte(void); /**< To receive byte */
 
 #ifdef __cplusplus

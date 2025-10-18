@@ -2,12 +2,11 @@
 
 #include <cstdint>
 #include <xuartps.h>
-#include <xil_printf.h>
 #include <string.h>
 
 #include "cartridge.h"
 #include "../common.h"
-#include "../xil_sprintf.h"
+#include "../print.h"
 
 // TODO: Implement timeout of 3s?
 // TODO: Call virtual printf so platform agnostic? (Zynq/Arduino)

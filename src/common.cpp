@@ -1,8 +1,9 @@
 #include "common.h"
 
-#include <xil_printf.h>
 #include <xstatus.h>
 #include <cstdlib>
+
+#include "print.h"
 
 void die(const char* message)
 {

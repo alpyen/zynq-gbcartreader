@@ -1,11 +1,11 @@
 #include "xparameters.h"
-#include <xil_printf.h>
 #include <xuartps.h>
 
 #include "pmod.h"
 #include "cli_handlers.h"
 #include "../common.h"
 #include "../standalone.h"
+#include "../print.h"
 
 #include <string.h>
 

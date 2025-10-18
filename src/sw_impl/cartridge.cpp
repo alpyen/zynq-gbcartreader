@@ -1,6 +1,6 @@
 #include "cartridge.h"
 
-#include <xil_printf.h>
+#include "../print.h"
 #include "pmod.h"
 
 const uint16_t ROM_BANK_AREA1_BASE_ADDRESS = 0x0000;
