@@ -3,13 +3,13 @@
 #include <xuartps.h>
 #include "common.h"
 
-void uart_readline(uint32_t base_address, char* buffer, uint8_t buffer_size)
+void uart_readline(char* buffer, uint8_t buffer_size)
 {
     uint8_t num_received = 0;
 
     while (true)
     {
-        char received = XUartPs_RecvByte(base_address);
+        char received = XUartPs_RecvByte(STDOUT_BASEADDRESS);
 
         // Transform to lower case for strcmp
         if (received >= 'A' && received <= 'Z')

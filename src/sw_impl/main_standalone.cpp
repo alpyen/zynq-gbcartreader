@@ -28,7 +28,7 @@ int main()
 
     while (true)
     {
-        uart_readline(XPAR_UART0_BASEADDR, line_buffer, sizeof(line_buffer));
+        uart_readline(line_buffer, sizeof(line_buffer));
 
         bool valid_command = false;
         for (uint8_t i = 0; i < arraysizeof(commands); ++i)

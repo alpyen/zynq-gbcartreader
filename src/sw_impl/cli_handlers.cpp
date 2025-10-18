@@ -11,21 +11,16 @@
 
 // TODO: Implement timeout of 3s?
 // TODO: Call virtual printf so platform agnostic? (Zynq/Arduino)
-// TODO: Get rid of UART base address if we're making this platform independant.
 // TODO: Implement xil_sprintf
 
 inline static void __print_response_header(response_t code, uint32_t payload_size = 0)
 {
-    xil_printf("%c", code);
+    XUartPs_SendByte(STDOUT_BASEADDRESS, code);
 
     if (payload_size > 0)
     {
-        xil_printf("%c%c%c%c",
-            (payload_size >> 0) & 0xff,
-            (payload_size >> 8) & 0xff,
-            (payload_size >> 16) & 0xff,
-            (payload_size >> 24) & 0xff
-        );
+        for (unsigned i = 0; i < 4; ++i)
+            XUartPs_SendByte(STDOUT_BASEADDRESS, (uint8_t)(payload_size >> (i * 8)));
     }
 }
 
@@ -87,8 +82,8 @@ void cli_parse_header()
         not use vsnprintf and keep track of the number of characters.
 
         This implementation works just fine but -feels- terrible.  It also uses vsprintf
-        instead of a slimmed down version like xil_printf instead of printf.  Perhaps,
-        modify xil_printf to print to a char buffer instead to the stdout?
+        instead of a slimmed down version like xil_printf instead of printf.
+        Perhaps, modify xil_printf to print to a char buffer instead to the stdout?
     */
     char* header_string = (char*)&cartridge_buffer[0x1000];
     char* header_string_base = header_string;
@@ -268,7 +263,7 @@ void cli_read_rom()
         }
 
         for (unsigned address = 0; address < ROM_BANK_SIZE; ++address)
-            XUartPs_SendByte(XPAR_UART0_BASEADDR, cartridge_buffer[address]);
+            XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
     }
 }
 
@@ -329,7 +324,7 @@ void cli_read_ram()
         }
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
-            XUartPs_SendByte(XPAR_UART0_BASEADDR, cartridge_buffer[address]);
+            XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
     }
 }
 
@@ -380,7 +375,7 @@ void cli_write_ram()
     // How many bytes wants the PC to write?
     uint32_t write_size = 0;
     for (int i = 0; i < 4; ++i)
-        write_size |= ((uint32_t)XUartPs_RecvByte(XPAR_UART0_BASEADDR)) << (i * 8);
+        write_size |= ((uint32_t)XUartPs_RecvByte(STDOUT_BASEADDRESS)) << (i * 8);
 
     if (write_size != num_banks * RAM_BANK_SIZE)
     {
@@ -394,9 +389,9 @@ void cli_write_ram()
     {
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
         {
-            uint8_t byte = XUartPs_RecvByte(XPAR_UART0_BASEADDR);
+            uint8_t byte = XUartPs_RecvByte(STDOUT_BASEADDRESS);
             cartridge_buffer[address] = byte;
-            XUartPs_SendByte(XPAR_UART0_BASEADDR, byte);
+            XUartPs_SendByte(STDOUT_BASEADDRESS, byte);
         }
 
         write_func(bank);
@@ -425,7 +420,7 @@ void cli_read_rtc()
     // Registers are selected and then appear on the whole address range.
     // mbc3::read_rtc just lists them sequentially.
     for (unsigned address = 0; address < 5; ++address)
-        XUartPs_SendByte(XPAR_UART0_BASEADDR, cartridge_buffer[address]);
+        XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
 }
 
 void cli_write_rtc()
