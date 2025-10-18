@@ -3,15 +3,14 @@
 #include <cstdint>
 #include <xuartps.h>
 #include <xil_printf.h>
-#include <cstdio>
 #include <string.h>
 
 #include "cartridge.h"
 #include "../common.h"
+#include "../xil_sprintf.h"
 
 // TODO: Implement timeout of 3s?
 // TODO: Call virtual printf so platform agnostic? (Zynq/Arduino)
-// TODO: Implement xil_sprintf
 
 inline static void __print_response_header(response_t code, uint32_t payload_size = 0)
 {
@@ -53,18 +52,6 @@ void cli_help()
     xil_printf("%s", help_string);
 }
 
-// Appends str to dest and advances the pointer dest is pointing to forwards.
-// This function does NOT check bounds and is only meant for use with cli_parse_header.
-inline static void __string_append(char** dest, const char* str, ...)
-{
-    va_list args;
-    va_start(args, str);
-    int added = vsprintf(*dest, str, args);
-    va_end(args);
-
-    *dest += added;
-}
-
 // Parses and outputs the cartridge header in human readable format.
 void cli_parse_header()
 {
@@ -88,15 +75,15 @@ void cli_parse_header()
     char* header_string = (char*)&cartridge_buffer[0x1000];
     char* header_string_base = header_string;
 
-    __string_append(&header_string, "Overview:\r\n");
-    __string_append(&header_string, "  Entry Point:      ");
+    xil_sprintf(&header_string, "Overview:\r\n");
+    xil_sprintf(&header_string, "  Entry Point:      ");
 
     for (unsigned i = 0; i < arraysizeof(header->entry_point); ++i)
-        __string_append(&header_string, " %02x", header->entry_point[i]);
+        xil_sprintf(&header_string, " %02x", header->entry_point[i]);
 
-    __string_append(&header_string, "\r\n");
+    xil_sprintf(&header_string, "\r\n");
 
-    __string_append(&header_string,
+    xil_sprintf(&header_string,
         "  Nintendo Logo:     %s\r\n",
         memcmp(header->nintendo_logo, NINTENDO_LOGO, arraysizeof(NINTENDO_LOGO)) ? "Bad" : "Good"
     );
@@ -104,102 +91,102 @@ void cli_parse_header()
 
     // The title can include the "Manufacturer Code" and the "CGB flag" depending on the
     // age of the game/cartridge.  We only display the printable characters.
-    __string_append(&header_string, "  Title:             ");
+    xil_sprintf(&header_string, "  Title:             ");
     for (unsigned i = 0; i < arraysizeof(header->title); ++i)
     {
         if (!is_printable(header->title[i])) break;
-        __string_append(&header_string, "%c", header->title[i]);
+        xil_sprintf(&header_string, "%c", header->title[i]);
     }
-    __string_append(&header_string, "\r\n");
+    xil_sprintf(&header_string, "\r\n");
 
-    __string_append(&header_string, "  Manufac. Code (?): ");
+    xil_sprintf(&header_string, "  Manufac. Code (?): ");
     for (unsigned i = 0; i < 4; ++i)
     {
         char letter = header->title[11 + i];
         if (is_printable(letter))
-        __string_append(&header_string, "%c", letter);
+        xil_sprintf(&header_string, "%c", letter);
     }
-    __string_append(&header_string, "\r\n");
+    xil_sprintf(&header_string, "\r\n");
 
-    __string_append(&header_string, "  CGB Flag:          ");
+    xil_sprintf(&header_string, "  CGB Flag:          ");
     if (header->title[15] == 0x80)
-        __string_append(&header_string, "CGB supported, but backwards compatible");
+        xil_sprintf(&header_string, "CGB supported, but backwards compatible");
     else if (header->title[15] == 0xc0)
-        __string_append(&header_string, "CGB exclusive");
+        xil_sprintf(&header_string, "CGB exclusive");
     else
-        __string_append(&header_string, "No");
-    __string_append(&header_string, "\r\n");
+        xil_sprintf(&header_string, "No");
+    xil_sprintf(&header_string, "\r\n");
 
 
-    __string_append(
+    xil_sprintf(
         &header_string,
         "  New Licensee Code: %s\r\n",
         get_new_licensee_code_string(header->new_licensee_code)
     );
 
 
-    __string_append(&header_string, "  SGB Flag:          %s\r\n", header->sgb_flag ? "Yes": "No");
+    xil_sprintf(&header_string, "  SGB Flag:          %s\r\n", header->sgb_flag ? "Yes": "No");
 
 
-    __string_append(&header_string, "  Type:              %s\r\n", get_cartridge_type_string(header->cartridge_type));
+    xil_sprintf(&header_string, "  Type:              %s\r\n", get_cartridge_type_string(header->cartridge_type));
 
 
-    __string_append(&header_string, "  ROM Size:          ", header->rom_size);
+    xil_sprintf(&header_string, "  ROM Size:          ", header->rom_size);
     if (header->rom_size <= 0x08)
-        __string_append(&header_string, "%d KiB (%d banks)", 1 << (5 + header->rom_size), 1 << (1 + header->rom_size));
+        xil_sprintf(&header_string, "%d KiB (%d banks)", 1 << (5 + header->rom_size), 1 << (1 + header->rom_size));
     else
-        __string_append(&header_string, "%02x not recognized.", header->rom_size);
-    __string_append(&header_string, "\r\n");
+        xil_sprintf(&header_string, "%02x not recognized.", header->rom_size);
+    xil_sprintf(&header_string, "\r\n");
 
 
-    __string_append(&header_string, "  RAM Size:          ", header->ram_size);
+    xil_sprintf(&header_string, "  RAM Size:          ", header->ram_size);
     switch (header->ram_size)
     {
-        case 0x00: __string_append(&header_string, "No RAM"); break;
-        case 0x02: __string_append(&header_string, "8 KiB (1 banks"); break;
-        case 0x03: __string_append(&header_string, "32 KiB (4 banks)"); break;
-        case 0x04: __string_append(&header_string, "128 KiB (16 banks)"); break;
-        case 0x05: __string_append(&header_string, "64 KiB (8 banks)"); break;
-        default: __string_append(&header_string, "%02x not recognized."); break;
+        case 0x00: xil_sprintf(&header_string, "No RAM"); break;
+        case 0x02: xil_sprintf(&header_string, "8 KiB (1 banks"); break;
+        case 0x03: xil_sprintf(&header_string, "32 KiB (4 banks)"); break;
+        case 0x04: xil_sprintf(&header_string, "128 KiB (16 banks)"); break;
+        case 0x05: xil_sprintf(&header_string, "64 KiB (8 banks)"); break;
+        default: xil_sprintf(&header_string, "%02x not recognized."); break;
     }
-    __string_append(&header_string, "\r\n");
+    xil_sprintf(&header_string, "\r\n");
 
 
-    __string_append(
+    xil_sprintf(
         &header_string,
         "  Destination Code:  %s\r\n",
         (header->destination_code == 0x00) ? "Japan": "Overseas"
     );
 
 
-    __string_append(&header_string,
+    xil_sprintf(&header_string,
         "  Old Licensee Code: %s\r\n",
         get_old_licensee_code_string(header->old_licensee_code)
     );
 
 
-    __string_append(&header_string, "  Version:           %02x\r\n", header->rom_version);
+    xil_sprintf(&header_string, "  Version:           %02x\r\n", header->rom_version);
 
 
-    __string_append(&header_string, "  Header Checksum:   %02x\r\n", header->header_checksum);
+    xil_sprintf(&header_string, "  Header Checksum:   %02x\r\n", header->header_checksum);
 
 
-    __string_append(
+    xil_sprintf(
         &header_string,
         "  Global Checksum:   %02x %02x\r\n",
         header->global_checksum[0], header->global_checksum[1]
     );
 
-    __string_append(&header_string, "\r\n");
+    xil_sprintf(&header_string, "\r\n");
 
-    __string_append(&header_string, "Full Header:");
+    xil_sprintf(&header_string, "Full Header:");
     for (unsigned i = 0; i < sizeof(*header); ++i)
     {
-        if (i % 0x10 == 0) __string_append(&header_string, "\r\n  0x%04x: ", HEADER_BASE_ADDRESS + i);
-        __string_append(&header_string, " %02x", ((uint8_t*)header)[i]);
+        if (i % 0x10 == 0) xil_sprintf(&header_string, "\r\n  0x%04x: ", HEADER_BASE_ADDRESS + i);
+        xil_sprintf(&header_string, " %02x", ((uint8_t*)header)[i]);
     }
 
-    __string_append(&header_string, "\r\n");
+    xil_sprintf(&header_string, "\r\n");
 
     __print_response_header(response_t::OK, (uint32_t)(header_string - header_string_base));
     xil_printf("%s", header_string_base);
