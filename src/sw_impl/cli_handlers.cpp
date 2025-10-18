@@ -9,7 +9,6 @@
 #include "cartridge.h"
 #include "../common.h"
 
-// TODO: Replace all bytewise xil_printfs with custom implementation.
 // TODO: Implement timeout of 3s?
 // TODO: Call virtual printf so platform agnostic? (Zynq/Arduino)
 // TODO: Get rid of UART base address if we're making this platform independant.
@@ -269,7 +268,7 @@ void cli_read_rom()
         }
 
         for (unsigned address = 0; address < ROM_BANK_SIZE; ++address)
-            xil_printf("%c", cartridge_buffer[address]);
+            XUartPs_SendByte(XPAR_UART0_BASEADDR, cartridge_buffer[address]);
     }
 }
 
@@ -330,7 +329,7 @@ void cli_read_ram()
         }
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
-            xil_printf("%c", cartridge_buffer[address]);
+            XUartPs_SendByte(XPAR_UART0_BASEADDR, cartridge_buffer[address]);
     }
 }
 
@@ -426,7 +425,7 @@ void cli_read_rtc()
     // Registers are selected and then appear on the whole address range.
     // mbc3::read_rtc just lists them sequentially.
     for (unsigned address = 0; address < 5; ++address)
-        xil_printf("%c", cartridge_buffer[address]);
+        XUartPs_SendByte(XPAR_UART0_BASEADDR, cartridge_buffer[address]);
 }
 
 void cli_write_rtc()
