@@ -5,6 +5,50 @@ import time
 
 from enum import Enum
 
+class ResponseType(Enum):
+    OK                      = 0
+    UNKNOWN_COMMAND         = 1
+
+    # Broken Cartridge
+    INVALID_NUM_ROM_BANKS   = 10
+    INVALID_NUM_RAM_BANKS   = 11
+    INVALID_CARTRIDGE_TYPE  = 12
+
+    # PC tries op that the cart cannot handle
+    INVALID_RAM_WRITE_SIZE  = 21
+    CARTRIDGE_HAS_NO_RAM    = 22
+    CARTRIDGE_HAS_NO_RTC    = 23
+    INVALID_RTC_WRITE_SIZE  = 24
+
+
+# We do our logging into stderr so the data can be piped from stdout to a file with the shell.
+def log(message, end="\n"):
+    print(message, end=end, flush=True, file=sys.stderr)
+
+def die(message):
+    log(message)
+    exit(0)
+
+TRANSFER_TIMEOUT = 3
+last_comm = time.time()
+
+# Waits until atleast n bytes are in our RX buffer.
+# Times out if last receive is more than 3 seconds ago.
+def wait_for_n_serial_bytes(count):
+    global link, last_comm
+
+    def timedout():
+        return ((time.time() - last_comm) >= TRANSFER_TIMEOUT)
+
+    while not timedout() and link.in_waiting < count:
+        pass
+
+    if timedout():
+        die("Transfer timed out. Exiting.")
+
+    last_comm = time.time()
+
+
 parser = argparse.ArgumentParser(
     prog="reader",
     description=
@@ -24,48 +68,6 @@ if len(args.command) == 0:
 
 command = " ".join(args.command)
 
-class ResponseType(Enum):
-    OK                      = 0
-    UNKNOWN_COMMAND         = 1
-
-    # Broken Cartridge
-    INVALID_NUM_ROM_BANKS   = 10
-    INVALID_NUM_RAM_BANKS   = 11
-    INVALID_CARTRIDGE_TYPE  = 12
-
-    # PC tries op that the cart cannot handle
-    INVALID_RAM_WRITE_SIZE  = 21
-    CARTRIDGE_HAS_NO_RAM    = 22
-    CARTRIDGE_HAS_NO_RTC    = 23
-    INVALID_RTC_WRITE_SIZE  = 24
-
-# Waits until atleast n bytes are in our RX buffer.
-# Times out if last receive is more than 3 seconds ago.
-def wait_for_n_serial_bytes(count):
-    global serial
-
-    def timeout():
-        _TRANSFER_TIMEOUT = 30
-
-        if not hasattr(timeout, "last_comm"):
-            timeout.last_comm = time.time()
-
-        return ((time.time() - last_comm) >= _TRANSFER_TIMEOUT)
-
-    while not timeout() and link.in_waiting < count:
-        pass
-
-    if timeout():
-        log("Transfer timed out. Exiting.")
-        exit(0)
-
-    timeout.last_comm = time.time()
-
-
-# We do our logging into stderr so the data can be piped from stdout to a file with the shell.
-def log(message, end="\n"):
-    print(message, end=end, flush=True, file=sys.stderr)
-
 with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1) as link:
 
     log(f"Sending command: {command}")
@@ -82,28 +84,22 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
                 pass
 
             case ResponseType.UNKNOWN_COMMAND:
-                log("Command not recognized. Try \"help\" for command reference.")
-                exit(0)
+                die("Command not recognized. Try \"help\" for command reference.")
 
             case ResponseType.INVALID_NUM_ROM_BANKS:
-                log("Cartridge has invalid amount of ROM banks. Broken cartridge/Bad connection?")
-                exit(0)
+                die("Cartridge has invalid amount of ROM banks. Broken cartridge/Bad connection?")
 
             case ResponseType.CARTRIDGE_HAS_NO_RAM:
-                log("Cartridge has no RAM.")
-                exit(0)
+                die("Cartridge has no RAM.")
 
             case ResponseType.INVALID_NUM_RAM_BANKS:
-                log("Cartridge has invalid amount of RAM banks. Broken cartridge/Bad connection?")
-                exit(0)
+                die("Cartridge has invalid amount of RAM banks. Broken cartridge/Bad connection?")
 
             case ResponseType.INVALID_CARTRIDGE_TYPE:
-                log("Cartridge type not recognized. Broken cartridge/Bad connection?")
-                exit(0)
+                die("Cartridge type not recognized. Broken cartridge/Bad connection?")
 
     except ValueError:
-        log(f"Invalid response type: {response}")
-        exit(0)
+        die(f"Invalid response type: {response}")
 
 
     if command == "help" or "parse header" == command or "read" in command:
@@ -116,7 +112,7 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
 
         while bytes_received != bytes_to_receive:
             # The contents of "help" and "parse header" may not be divisible by 64.
-            bytes_to_read = 64 if ((bytes_to_receive - bytes_received) >= 64) else 1
+            bytes_to_read = min(64, bytes_to_receive - bytes_received)
 
             wait_for_n_serial_bytes(bytes_to_read)
 
@@ -147,12 +143,10 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
                 pass
 
             case ResponseType.INVALID_RAM_WRITE_SIZE:
-                log("RAM write size does not match cartridge RAM size.")
-                exit(0)
+                die("RAM write size does not match cartridge RAM size.")
 
             case ResponseType.INVALID_RTC_WRITE_SIZE:
-                log("RTC write size does not match cartridge RTC size.")
-                exit(0)
+                die("RTC write size does not match cartridge RTC size.")
 
         log("Sending data...", "")
 
@@ -168,6 +162,6 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
 
             log(f"\rSending data...{bytes_sent//1024}K/{buffer_length//1024}K", "")
 
-        log("done!")
+        log("...done!")
 
 exit(0)
