@@ -29,7 +29,7 @@ void cli_unknown()
 
 void cli_help()
 {
-    const char* help_string =
+    static const char help_string[] =
         "ZYNQ GBCartReader - Read & Write Gameboy cartridges\r\n"
         "written by alpyen - visit the project on github.com/alpyen/zynq-gbcartreader\r\n"
         "\r\n"
@@ -44,10 +44,7 @@ void cli_help()
         "write rtc     Write cartridge RTC (if available) from binary terminal data\r\n"
     ;
 
-    // Use __builtin_strlen to compute length at compile time.
-    // Otherwise the string has to be stored in the stack or moves to the global scope
-    // of this cpp-file.
-    __print_response_header(response_t::OK, __builtin_strlen(help_string));
+    __print_response_header(response_t::OK, sizeof(help_string) - 1);
     xil_printf("%s", help_string);
 }
 
