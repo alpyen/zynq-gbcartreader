@@ -67,27 +67,6 @@ struct cartridge_header
     uint8_t global_checksum[2];     // 0x14E - 0x14F
 } __attribute__((packed));
 
-struct rtc_data
-{
-    uint8_t seconds;
-    uint8_t minutes;
-    uint8_t hours;
-    uint8_t day_lower;
-
-    union
-    {
-        uint8_t value;
-
-        struct
-        {
-            uint8_t day_higher: 1;
-            uint8_t: 5;
-            uint8_t halt: 1;
-            uint8_t day_counter_carry: 1;
-        };
-    } day_halt_carry;
-} __attribute__((packed));
-
 namespace mbc1
 {
     cartridge_header* read_header();

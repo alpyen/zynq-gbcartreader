@@ -26,6 +26,8 @@ int main()
 
     char line_buffer[16];
 
+    // TODO: Implemenet timeout mechanism of 3 seconds.
+
     while (true)
     {
         uart_readline(line_buffer, sizeof(line_buffer));

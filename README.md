@@ -1,5 +1,6 @@
+### Note: This project is a work in progress and is being actively developed. See the Todo-List at the bottom.
 
-### Note: This project is a work in progress and is being actively developed.
+
 ___
 
 # ZYNQ GBCartReader - Read & Write GameBoy cartridges
@@ -34,14 +35,14 @@ a list of the ones that are available.
 |  MBC2  |   🚫    | -                                                                                            |
 |  MBC3  | WIP (✅) | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
 |  MBC5  |    ✅    | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
-| MMM01  |   🚫    | -                                                                                            |
 
 - ✅ compatible and verified<br>
 - (✅) compatible but not verified or only partially verified<br>
 - 🚫 not implemented yet
 
-Some exotic types like MBC6, MBC7, Pocket Camera, Bandai TAMA5, HuC1 and HuC3 exist but
-are not supported as they are very uncommon and most games simply use No MBC, MBC 1, 3 or 5.
+Some exotic cartridges exist which are not supported. For an exhaustive list check the <a href="https://gbdev.io/pandocs/MBC2.html">Pan Docs</a>
+and <a href="https://gbhwdb.gekkio.fi/cartridges/gb.html">GameBoy hardware database</a>. Most games simply use No MBC, MBC1, 3 or 5.
+If I own any of the uncommon ones I'll implement them, otherwise I'll skip them as I cannot verify them.
 
 
 ## Quick Start
@@ -96,3 +97,13 @@ This project heavily relies on the work of others who have reverse engineered an
 the inner workings of the Game Boy and its cartridges and/or compiled existing information:
 - Pan Docs - https://github.com/gbdev/pandocs
 - Game Boy: Complete Technical Reference - https://github.com/Gekkio/gb-ctr
+
+
+___
+
+### Todo-List
+
+- Implement MBC1 read/write ram
+- Implement MBC2 completely and verify against game
+- Port bare-metal app to MicroBlaze on a Basys3
+- Port bare-betal app to be used on Arduino
