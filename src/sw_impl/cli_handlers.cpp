@@ -201,7 +201,6 @@ void cli_read_rom()
         return;
     }
 
-    // Technically we already read bank 0, but can't hurt to read it again.
     for (unsigned bank = 0; bank < num_banks; ++bank)
     {
         switch (cartridge_type)
@@ -274,10 +273,20 @@ void cli_read_ram()
             return;
     }
 
+    /* NOTE: We don't sanity check based on the different configurations and assume the ROM is good.
+             For example, MBC1+RAM cannot have >512K ROMs with any RAM on them.
+             There's way too much variety to cover and it would unnecessarily bloat up the code
+             since official cartridges are required to meet the specification. */
+
     for (unsigned bank = 0; bank < num_banks; ++bank)
     {
         switch (cartridge_type)
         {
+            case cartridge_type::MBC1_RAM:
+            case cartridge_type::MBC1_RAM_BATTERY:
+                mbc1::read_ram(bank);
+                break;
+
             case cartridge_type::MBC3_RAM:
             case cartridge_type::MBC3_RAM_BATTERY:
             case cartridge_type::MBC3_RTC_RAM_BATTERY:
@@ -321,6 +330,11 @@ void cli_write_ram()
 
     switch (cartridge_type)
     {
+        case cartridge_type::MBC1_RAM:
+        case cartridge_type::MBC1_RAM_BATTERY:
+            write_func = mbc1::write_ram;
+            break;
+
         case cartridge_type::MBC3_RAM:
         case cartridge_type::MBC3_RAM_BATTERY:
         case cartridge_type::MBC3_RTC_RAM_BATTERY:
@@ -397,7 +411,6 @@ void cli_read_rtc()
             return;
     }
 
-    // TODO: Change to sizeof(rtc_data) ?
     __print_response_header(response_t::OK, 5);
 
     // Registers are selected and then appear on the whole address range.

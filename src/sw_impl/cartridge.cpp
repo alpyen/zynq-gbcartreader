@@ -98,19 +98,21 @@ void _write_register(uint16_t register_address, uint8_t value)
          footprint is rather small, they are deliberately left unbundled.*/
 namespace mbc1
 {
+    const uint8_t RAM_ENABLE_PATTERN = 0b00001010;
+
     enum registers: uint16_t
     {
-        RAMG    = 0x0000,
-        BANK1   = 0x2000,
-        BANK2   = 0x4000,
-        MODE    = 0x6000
+        RAMG        = 0x0000,
+        BANK1       = 0x2000,
+        BANK2_RAMB  = 0x4000,
+        MODE        = 0x6000
     };
 
     void reset_cartridge()
     {
         _write_register(registers::RAMG, 0);
         _write_register(registers::BANK1, 0);
-        _write_register(registers::BANK2, 0);
+        _write_register(registers::BANK2_RAMB, 0);
         _write_register(registers::MODE, 0);
 
         reset_pmod();
@@ -152,7 +154,70 @@ namespace mbc1
 
         _write_register(registers::MODE, 1);
         _write_register(registers::BANK1, bank & 0b11111);
-        _write_register(registers::BANK2, (bank >> 5) & 0b11);
+        _write_register(registers::BANK2_RAMB, (bank >> 5) & 0b11);
+
+        for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(bank_base_address + address);
+            cartridge_buffer[address] = _shiftin_data();
+
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+    }
+
+    void read_ram(uint8_t bank)
+    {
+        reset_cartridge();
+
+        _write_register(registers::MODE, 1);
+        _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+        _write_register(registers::BANK2_RAMB, bank);
+
+        for (uint16_t address = 0; address < RAM_BANK_SIZE; ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
+
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            cartridge_buffer[address] = _shiftin_data();
+
+            pmod_state.CSn = 1;
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+    }
+
+    void write_ram(uint8_t bank)
+    {
+        reset_cartridge();
+
+        _write_register(registers::MODE, 1);
+        _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+        _write_register(registers::BANK2_RAMB, bank);
+
+        for (uint16_t address = 0; address < RAM_BANK_SIZE; ++address)
+        {
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
+
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            _shiftout_data(cartridge_buffer[address]);
+
+            pmod_state.CSn = 1;
+            write_pmod();
+        }
+    }
+}
+
 
         for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
         {

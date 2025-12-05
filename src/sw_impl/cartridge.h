@@ -71,8 +71,8 @@ namespace mbc1
 {
     cartridge_header* read_header();
     void read_rom(uint8_t bank);
-    // TODO: void read_ram(uint8_t bank);
-    // TODO: void write_ram();
+    void read_ram(uint8_t bank);
+    void write_ram(uint8_t bank);
 }
 
 namespace mbc3
