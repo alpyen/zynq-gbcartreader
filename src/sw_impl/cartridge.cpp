@@ -94,6 +94,8 @@ void _write_register(uint16_t register_address, uint8_t value)
 }
 
 // NOTE: The cartridge and pmod_state are REQUIRED to be reset to a known state before operating on them.
+/* NOTE: Some functions like write_ram are identical across multiple MBCs.  Since their
+         footprint is rather small, they are deliberately left unbundled.*/
 namespace mbc1
 {
     enum registers: uint16_t
@@ -249,33 +251,12 @@ namespace mbc3
         {
             _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
 
-            // TODO: There is no CSn = 1, move out of the loop or CSn=1 at the end of the floor?
             pmod_state.CSn = 0;
             write_pmod();
 
-            pmod_state.DATA_OUT_RCLK = 0;
+            _shiftout_data(cartridge_buffer[address]);
 
-            for (unsigned i = 0; i < 8; ++i)
-            {
-                pmod_state.DATA_OUT_SCLK = 0;
-                pmod_state.DATA_OUT_SDATA = (cartridge_buffer[address] >> (7-i)) & 0b1;
-                write_pmod();
-
-                pmod_state.DATA_OUT_SCLK = 1;
-                write_pmod();
-            }
-
-            pmod_state.DATA_OUT_RCLK = 1;
-            write_pmod();
-
-            pmod_state.DATA_OUT_OEn = 0;
-            pmod_state.WRn = 0;
-            write_pmod();
-
-            pmod_state.WRn = 1;
-            write_pmod();
-
-            pmod_state.DATA_OUT_OEn = 1;
+            pmod_state.CSn = 1;
             write_pmod();
         }
     }
@@ -403,33 +384,12 @@ namespace mbc5
         {
             _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
 
-            // TODO: There is no CSn = 1, move out of the loop or CSn=1 at the end of the floor?
             pmod_state.CSn = 0;
             write_pmod();
 
-            pmod_state.DATA_OUT_RCLK = 0;
+            _shiftout_data(cartridge_buffer[address]);
 
-            for (unsigned i = 0; i < 8; ++i)
-            {
-                pmod_state.DATA_OUT_SCLK = 0;
-                pmod_state.DATA_OUT_SDATA = (cartridge_buffer[address] >> (7-i)) & 0b1;
-                write_pmod();
-
-                pmod_state.DATA_OUT_SCLK = 1;
-                write_pmod();
-            }
-
-            pmod_state.DATA_OUT_RCLK = 1;
-            write_pmod();
-
-            pmod_state.DATA_OUT_OEn = 0;
-            pmod_state.WRn = 0;
-            write_pmod();
-
-            pmod_state.WRn = 1;
-            write_pmod();
-
-            pmod_state.DATA_OUT_OEn = 1;
+            pmod_state.CSn = 1;
             write_pmod();
         }
     }
