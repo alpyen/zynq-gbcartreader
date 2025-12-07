@@ -119,7 +119,7 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
             bytes_received += sys.stdout.buffer.write(link.read(bytes_to_read))
 
             if bytes_to_receive < 1024:
-                log(f"\rReceiving data...{bytes_received}/{bytes_to_receive}B", "")
+                log(f"\rReceiving data...{bytes_received}B/{bytes_to_receive}B", "")
             else:
                 log(f"\rReceiving data...{bytes_received//1024}K/{bytes_to_receive//1024}K", "")
 
@@ -160,7 +160,10 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
             wait_for_n_serial_bytes(BUFFER_CHUNK_SIZE)
             link.read(BUFFER_CHUNK_SIZE)
 
-            log(f"\rSending data...{bytes_sent//1024}K/{buffer_length//1024}K", "")
+            if buffer_length < 1024:
+                log(f"\rSending data...{bytes_sent}B/{buffer_length}B", "")
+            else:
+                log(f"\rSending data...{bytes_sent//1024}K/{buffer_length//1024}K", "")
 
         log("...done!")
 

@@ -7,6 +7,8 @@ const uint16_t HEADER_BASE_ADDRESS = 0x0100;
 const uint32_t ROM_BANK_SIZE = 0x4000;
 const uint32_t RAM_BANK_SIZE = 0x2000;
 
+const uint32_t INTERNAL_RAM_SIZE = 0x0200;
+
 const uint8_t NINTENDO_LOGO[0x30] = {
     0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
     0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
@@ -78,8 +80,8 @@ namespace mbc1
 namespace mbc2
 {
     void read_rom(uint8_t bank);
-    // TODO: void read_ram(???);
-    // TODO: void write_ram(???);
+    void read_ram();
+    void write_ram();
 }
 
 namespace mbc3

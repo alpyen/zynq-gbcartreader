@@ -32,7 +32,7 @@ a list of the ones that are available.
 | :----: | :-----: | :------------------------------------------------------------------------------------------- |
 | No MBC |   ✅    | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
 |  MBC1  |   ✅*   | Super Mario Land (DMG-ML-NOE)                                                                |
-|  MBC2  | WIP ✅  | F-1 RACE (DMG-F1-NOE)                                                                        |
+|  MBC2  |   ✅    | F-1 RACE (DMG-F1-NOE)                                                                        |
 |  MBC3  | WIP ✅* | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
 |  MBC5  |   ✅    | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
 
@@ -103,7 +103,5 @@ ___
 
 ### Todo-List
 
-- Implement MBC1 read/write ram
-- Implement MBC2 completely and verify against game
 - Port bare-metal app to MicroBlaze on a Basys3
 - Port bare-betal app to be used on Arduino

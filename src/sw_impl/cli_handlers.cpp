@@ -266,7 +266,11 @@ void cli_read_ram()
         // TODO: Handle MBC2 which has num_banks = 0 but includes 512x4b in the mapper.
 
         case 0x00:
-        case 0x01:
+            // MBC2 carts have RAM built into the MBC.
+            if (cartridge_type == cartridge_type::MBC2
+                || cartridge_type == cartridge_type::MBC2_BATTERY)
+                break;
+
             __print_response_header(response_t::CARTRIDGE_HAS_NO_RAM);
             return;
 
@@ -284,6 +288,19 @@ void cli_read_ram()
              For example, MBC1+RAM cannot have >512K ROMs with any RAM on them.
              There's way too much variety to cover and it would unnecessarily bloat up the code
              since official cartridges are required to meet the specification. */
+
+    // Handle MBC2 separately as it has internal RAM
+    if (cartridge_type == cartridge_type::MBC2 || cartridge_type == cartridge_type::MBC2_BATTERY)
+    {
+        mbc2::read_ram();
+
+        __print_response_header(response_t::OK, INTERNAL_RAM_SIZE);
+
+        for (unsigned address = 0; address < INTERNAL_RAM_SIZE; ++address)
+            XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
+
+        return;
+    }
 
     for (unsigned bank = 0; bank < num_banks; ++bank)
     {
@@ -342,6 +359,10 @@ void cli_write_ram()
             write_func = mbc1::write_ram;
             break;
 
+        case cartridge_type::MBC2:
+        case cartridge_type::MBC2_BATTERY:
+            break;
+
         case cartridge_type::MBC3_RAM:
         case cartridge_type::MBC3_RAM_BATTERY:
         case cartridge_type::MBC3_RTC_RAM_BATTERY:
@@ -364,6 +385,12 @@ void cli_write_ram()
 
     switch (header->ram_size)
     {
+        case 0x00:
+            // MBC2 carts have RAM built into the MBC.
+            if (cartridge_type == cartridge_type::MBC2
+                || cartridge_type == cartridge_type::MBC2_BATTERY)
+                break;
+
         case 0x02: num_banks = 1; break;
         case 0x03: num_banks = 4; break;
         case 0x04: num_banks = 16; break;
@@ -380,6 +407,28 @@ void cli_write_ram()
     uint32_t write_size = 0;
     for (int i = 0; i < 4; ++i)
         write_size |= ((uint32_t)XUartPs_RecvByte(STDOUT_BASEADDRESS)) << (i * 8);
+
+    // Handle MBC2 separately as it as internal RAM.
+    if (cartridge_type == cartridge_type::MBC2 || cartridge_type == cartridge_type::MBC2_BATTERY)
+    {
+        if (write_size != INTERNAL_RAM_SIZE)
+        {
+            __print_response_header(response_t::INVALID_RAM_WRITE_SIZE);
+            return;
+        }
+
+        __print_response_header(response_t::OK);
+
+        for (unsigned address = 0; address < INTERNAL_RAM_SIZE; ++address)
+        {
+            uint8_t byte = XUartPs_RecvByte(STDOUT_BASEADDRESS);
+            cartridge_buffer[address] = byte;
+            XUartPs_SendByte(STDOUT_BASEADDRESS, byte);
+        }
+
+        mbc2::write_ram();
+        return;
+    }
 
     if (write_size != num_banks * RAM_BANK_SIZE)
     {

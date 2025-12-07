@@ -259,6 +259,52 @@ namespace mbc2
             write_pmod();
         }
     }
+
+    void read_ram()
+    {
+        reset_cartridge();
+
+        _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+
+        for (uint16_t address = 0; address < INTERNAL_RAM_SIZE; ++address)
+        {
+            pmod_state.RDn = 0;
+            write_pmod();
+
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
+
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            // MBC2 internal RAM is only 4 bit wide, so disregard high nibble.
+            cartridge_buffer[address] = _shiftin_data() & 0b1111;
+
+            pmod_state.CSn = 1;
+            pmod_state.RDn = 1;
+            write_pmod();
+        }
+    }
+
+    void write_ram()
+    {
+        reset_cartridge();
+
+        _write_register(registers::RAMG, RAM_ENABLE_PATTERN);
+
+        for (uint16_t address = 0; address < INTERNAL_RAM_SIZE; ++address)
+        {
+            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS + address);
+
+            pmod_state.CSn = 0;
+            write_pmod();
+
+            // See mbc2::read_ram()
+            _shiftout_data(cartridge_buffer[address] & 0b1111);
+
+            pmod_state.CSn = 1;
+            write_pmod();
+        }
+    }
 }
 
 namespace mbc3
