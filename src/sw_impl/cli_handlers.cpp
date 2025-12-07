@@ -216,6 +216,11 @@ void cli_read_rom()
                 mbc1::read_rom(bank);
                 break;
 
+            case cartridge_type::MBC2:
+            case cartridge_type::MBC2_BATTERY:
+                mbc2::read_rom(bank);
+                break;
+
             case cartridge_type::MBC3:
             case cartridge_type::MBC3_RAM:
             case cartridge_type::MBC3_RAM_BATTERY:
@@ -258,6 +263,8 @@ void cli_read_ram()
 
     switch (header->ram_size)
     {
+        // TODO: Handle MBC2 which has num_banks = 0 but includes 512x4b in the mapper.
+
         case 0x00:
         case 0x01:
             __print_response_header(response_t::CARTRIDGE_HAS_NO_RAM);

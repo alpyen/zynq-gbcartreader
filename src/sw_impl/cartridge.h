@@ -75,6 +75,13 @@ namespace mbc1
     void write_ram(uint8_t bank);
 }
 
+namespace mbc2
+{
+    void read_rom(uint8_t bank);
+    // TODO: void read_ram(???);
+    // TODO: void write_ram(???);
+}
+
 namespace mbc3
 {
     void read_rom(uint8_t bank);

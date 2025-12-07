@@ -218,6 +218,34 @@ namespace mbc1
     }
 }
 
+namespace mbc2
+{
+    const uint8_t RAM_ENABLE_PATTERN = 0b00001010;
+
+    enum registers: uint16_t
+    {
+        RAMG    = 0x0000,
+        ROMB    = 0x0100
+    };
+
+    void reset_cartridge()
+    {
+        _write_register(registers::RAMG, 0);
+        _write_register(registers::ROMB, 0);
+
+        reset_pmod();
+    }
+
+    void read_rom(uint8_t bank)
+    {
+        reset_cartridge();
+
+        uint16_t bank_base_address = ROM_BANK_AREA1_BASE_ADDRESS;
+
+        if ((bank & 0b1111) != 0)
+            bank_base_address = ROM_BANK_AREA2_BASE_ADDRESS;
+
+        _write_register(registers::ROMB, bank);
 
         for (uint16_t address = 0; address < ROM_BANK_SIZE; ++address)
         {

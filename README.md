@@ -28,13 +28,13 @@ There are a couple of different cartridge types that mostly distinguish between 
 mapper chip and additional periphery such as RAM, Real-Time-Clock, Battery and more. Here's
 a list of the ones that are available.
 
-|  Type  |  Status  | Verified On                                                                                  |
-| :----: | :------: | :------------------------------------------------------------------------------------------- |
-| No MBC |    ✅    | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
-|  MBC1  | ✅* | Super Mario Land (DMG-ML-NOE)                                                                |
-|  MBC2  |   🚫    | -                                                                                            |
+|  Type  | Status  | Verified On                                                                                  |
+| :----: | :-----: | :------------------------------------------------------------------------------------------- |
+| No MBC |   ✅    | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
+|  MBC1  |   ✅*   | Super Mario Land (DMG-ML-NOE)                                                                |
+|  MBC2  | WIP ✅  | F-1 RACE (DMG-F1-NOE)                                                                        |
 |  MBC3  | WIP ✅* | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
-|  MBC5  |    ✅    | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
+|  MBC5  |   ✅    | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
 
 - ✅ compatible and verified<br>
 - ✅* compatible but only partially verified<br>
