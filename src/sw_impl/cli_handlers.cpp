@@ -127,7 +127,7 @@ void cli_parse_header()
     xil_sprintf(&header_string, "  Type:              %s\r\n", get_cartridge_type_string(header->cartridge_type));
 
 
-    xil_sprintf(&header_string, "  ROM Size:          ", header->rom_size);
+    xil_sprintf(&header_string, "  ROM Size:          ");
     if (header->rom_size <= 0x08)
         xil_sprintf(&header_string, "%d KiB (%d banks)", 1 << (5 + header->rom_size), 1 << (1 + header->rom_size));
     else
@@ -139,7 +139,7 @@ void cli_parse_header()
     switch (header->ram_size)
     {
         case 0x00: xil_sprintf(&header_string, "No RAM"); break;
-        case 0x02: xil_sprintf(&header_string, "8 KiB (1 banks"); break;
+        case 0x02: xil_sprintf(&header_string, "8 KiB (1 bank)"); break;
         case 0x03: xil_sprintf(&header_string, "32 KiB (4 banks)"); break;
         case 0x04: xil_sprintf(&header_string, "128 KiB (16 banks)"); break;
         case 0x05: xil_sprintf(&header_string, "64 KiB (8 banks)"); break;
@@ -390,6 +390,11 @@ void cli_write_ram()
             if (cartridge_type == cartridge_type::MBC2
                 || cartridge_type == cartridge_type::MBC2_BATTERY)
                 break;
+            else
+            {
+                __print_response_header(response_t::INVALID_NUM_RAM_BANKS);
+                return;
+            }
 
         case 0x02: num_banks = 1; break;
         case 0x03: num_banks = 4; break;

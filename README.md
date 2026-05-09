@@ -104,4 +104,4 @@ ___
 ### Todo-List
 
 - Port bare-metal app to MicroBlaze on a Basys3
-- Port bare-betal app to be used on Arduino
+- Magic Numbers (Num RTC Regs) scattered throughout

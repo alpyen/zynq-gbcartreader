@@ -5,7 +5,7 @@
 
 #include "print.h"
 
-void die(const char* message)
+[[noreturn]] void die(const char* message)
 {
     xil_printf("%s%s", message, "Critical Failure - Exiting Application!\r\n");
     exit(XST_FAILURE);
