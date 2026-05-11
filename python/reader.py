@@ -102,7 +102,7 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
         die(f"Invalid response type: {response}")
 
 
-    if command == "help" or "parse header" == command or "read" in command:
+    if (command == "help") or ("parse header" == command) or ("read" in command):
         log("Receiving data...", "")
 
         wait_for_n_serial_bytes(4)

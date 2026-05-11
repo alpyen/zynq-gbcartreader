@@ -399,46 +399,6 @@ namespace mbc3
             write_pmod();
         }
     }
-
-    void read_rtc()
-    {
-        reset_cartridge();
-
-        _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
-
-        const uint8_t RTC_REGISTERS_COUNT = 5;
-        const uint8_t RTC_REGISTERS_BASE_INDEX = 0x08;
-
-        _write_register(registers::RCLK_RTC, 0);
-        _write_register(registers::RCLK_RTC, 1);
-
-        for (uint8_t index = 0; index < RTC_REGISTERS_COUNT; ++index)
-        {
-            _write_register(registers::RAMB_RTCRS, RTC_REGISTERS_BASE_INDEX + index);
-
-            pmod_state.RDn = 0;
-            write_pmod();
-
-            /*
-                NOTE: It is recommended to wait 4 microsecods when accessing RTC registers
-                      which we do automatically by sleeping 1 us per write_pmod().
-            */
-            _shiftout_address(RAM_BANK_RTC_BASE_ADDRESS);
-            cartridge_buffer[index] = _shiftin_data();
-
-            pmod_state.RDn = 1;
-            write_pmod();
-        }
-    }
-
-    // void write_rtc()
-    // {
-    //     reset_cartridge();
-    //     _write_register(registers::RAMG_RTCRG, RAM_RTC_ENABLE_PATTERN);
-
-    //     // TODO: Set HALT bit before writing. Write can clash? Mulitple needed?
-
-    // }
 }
 
 namespace mbc5

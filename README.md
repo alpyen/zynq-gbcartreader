@@ -26,24 +26,27 @@ around with AXI interfaces.
 
 There are a couple of different cartridge types that mostly distinguish between the type of
 mapper chip and additional periphery such as RAM, Real-Time-Clock, Battery and more. Here's
-a list of the ones that are available.
+a list of the ones that are available:
 
-|  Type  | Status  | Verified On                                                                                  |
-| :----: | :-----: | :------------------------------------------------------------------------------------------- |
-| No MBC |   ✅    | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
-|  MBC1  |   ✅*   | Super Mario Land (DMG-ML-NOE)                                                                |
-|  MBC2  |   ✅    | F-1 RACE (DMG-F1-NOE)                                                                        |
-|  MBC3  | WIP ✅* | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
-|  MBC5  |   ✅    | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
+|  Type  | Status | Verified On                                                                                  |
+| :----: | :----: | :------------------------------------------------------------------------------------------- |
+| No MBC |   ✅   | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
+|  MBC1  |  ( ✅ )   | Super Mario Land (DMG-ML-NOE)                                                                |
+|  MBC2  |   ✅   | F-1 RACE (DMG-F1-NOE)                                                                        |
+|  MBC3  |  ✅   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
+|  MBC5  |   ✅   | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
 
+Legend:
 - ✅ compatible and verified<br>
-- ✅* compatible but only partially verified<br>
+- ( ✅ ) compatible but only partially verified<br>
 - 🚫 not implemented yet
 
 Some exotic cartridges exist which are not supported. For an exhaustive list check the <a href="https://gbdev.io/pandocs/MBC2.html">Pan Docs</a>
 and <a href="https://gbhwdb.gekkio.fi/cartridges/gb.html">GameBoy hardware database</a>. Most games simply use No MBC, MBC1, 3 or 5.
 If I own any of the uncommon ones I'll implement them, otherwise I'll skip them as I cannot verify them.
 
+This project supports reading the ROM, reading and writing to RAM allowing you to dump games, backup save files
+and also restore save files back to the cartridge. Reading and Writing RTC data is not supported.
 
 ## Quick Start
 
@@ -104,4 +107,4 @@ ___
 ### Todo-List
 
 - Port bare-metal app to MicroBlaze on a Basys3
-- Magic Numbers (Num RTC Regs) scattered throughout
+- Clean up

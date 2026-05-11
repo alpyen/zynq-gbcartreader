@@ -455,37 +455,3 @@ void cli_write_ram()
         write_func(bank);
     }
 }
-
-void cli_read_rtc()
-{
-    cartridge_header* header = mbc1::read_header();
-
-    switch (header->cartridge_type)
-    {
-        case cartridge_type::MBC3_RTC_BATTERY:
-        case cartridge_type::MBC3_RTC_RAM_BATTERY:
-            mbc3::read_rtc();
-            break;
-
-        default:
-            __print_response_header(response_t::CARTRIDGE_HAS_NO_RTC);
-            return;
-    }
-
-    __print_response_header(response_t::OK, 5);
-
-    // Registers are selected and then appear on the whole address range.
-    // mbc3::read_rtc just lists them sequentially.
-    for (unsigned address = 0; address < 5; ++address)
-        XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
-}
-
-void cli_write_rtc()
-{
-    cartridge_header* header = mbc1::read_header();
-    (void) header;
-
-    // TODO: Implement
-
-    return;
-}
