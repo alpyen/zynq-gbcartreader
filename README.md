@@ -31,10 +31,11 @@ a list of the ones that are available:
 |  Type  | Status | Verified On                                                                                  |
 | :----: | :----: | :------------------------------------------------------------------------------------------- |
 | No MBC |   ✅   | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
-|  MBC1  |  ( ✅ )   | Super Mario Land (DMG-ML-NOE)                                                                |
+|  MBC1  | ( ✅ ) | ポケットモンスター 緑 (DMG-APBJ-JPN)<br> Super Mario Land (DMG-ML-NOE)                       |
 |  MBC2  |   ✅   | F-1 RACE (DMG-F1-NOE)                                                                        |
-|  MBC3  |  ✅   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
+|  MBC3  |   ✅   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
 |  MBC5  |   ✅   | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
+| MBC30  |   ✅   | ポケットモンスター クリスタルバージョン (CGB-BXTJ-JPN)                                       |
 
 Legend:
 - ✅ compatible and verified<br>
