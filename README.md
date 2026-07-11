@@ -1,8 +1,3 @@
-### Note: This project is a work in progress and is being actively developed. See the Todo-List at the bottom.
-
-
-___
-
 # ZYNQ GBCartReader - Read & Write GameBoy cartridges
 
 This project is aimed to dive into FPGA SoCs and embedded software development
@@ -31,16 +26,11 @@ a list of the ones that are available:
 |  Type  | Status | Verified On                                                                                  |
 | :----: | :----: | :------------------------------------------------------------------------------------------- |
 | No MBC |   ✅   | Motocross Maniacs (DMG-MX-NOE)<br> Othello (DMG-OT-NOE)                                      |
-|  MBC1  | ( ✅ ) | ポケットモンスター 緑 (DMG-APBJ-JPN)<br> Super Mario Land (DMG-ML-NOE)                       |
+|  MBC1  |   ✅   | ポケットモンスター 緑 (DMG-APBJ-JPN)<br> Super Mario Land (DMG-ML-NOE)                       |
 |  MBC2  |   ✅   | F-1 RACE (DMG-F1-NOE)                                                                        |
 |  MBC3  |   ✅   | Pokémon Crystal (CGB-BYTD-NOE)<br> Pokémon Silver (DMG-AAXD-NOE)                             |
 |  MBC5  |   ✅   | Pokémon Red (DMG-APAD-NOE)<br> Pokémon Blue (DMG-APED-NOE)<br> Pokémon Yellow (DMG-APSD-NOE) |
 | MBC30  |   ✅   | ポケットモンスター クリスタルバージョン (CGB-BXTJ-JPN)                                       |
-
-Legend:
-- ✅ compatible and verified<br>
-- ( ✅ ) compatible but only partially verified<br>
-- 🚫 not implemented yet
 
 Some exotic cartridges exist which are not supported. For an exhaustive list check the <a href="https://gbdev.io/pandocs/MBC2.html">Pan Docs</a>
 and <a href="https://gbhwdb.gekkio.fi/cartridges/gb.html">GameBoy hardware database</a>. Most games simply use No MBC, MBC1, 3 or 5.
@@ -48,6 +38,9 @@ If I own any of the uncommon ones I'll implement them, otherwise I'll skip them 
 
 This project supports reading the ROM, reading and writing to RAM allowing you to dump games, backup save files
 and also restore save files back to the cartridge. Reading and Writing RTC data is not supported.
+
+I've noted that some games can underreport the number of ROM or RAM banks, for example ポケットモンスター 緑 or ポケットモンスター クリスタルバージョン.
+They only report half as many banks present, but manually fixing them in the software dumps these correctly too.
 
 ## Quick Start
 
@@ -107,5 +100,6 @@ ___
 
 ### Todo-List
 
+- Write Quick Start for reading/writing with the python script
 - Port bare-metal app to MicroBlaze on a Basys3
 - Clean up
