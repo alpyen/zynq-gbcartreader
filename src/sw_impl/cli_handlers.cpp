@@ -40,8 +40,6 @@ void cli_help()
         "read rom      Read cartridge rom and echo it in binary\r\n"
         "read ram      Read cartridge ram (if available) and echo it in binary\r\n"
         "write ram     Write cartridge ram (if available) from binary terminal data\r\n"
-        "read rtc      Read cartridge RTC (if available) and echo it in binary\r\n"
-        "write rtc     Write cartridge RTC (if available) from binary terminal data\r\n"
     ;
 
     __print_response_header(response_t::OK, sizeof(help_string) - 1);
