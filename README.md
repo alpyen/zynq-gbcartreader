@@ -147,21 +147,23 @@ Receiving data...2048K/2048K...done!
 This project was developed with Vivado/Vitis 2025.1 and uses scripts for these versions.
 It should be possible to recreate the projects with minimal hassle on different versions.
 
+Currently the PYNQ-Z2 with the software running on the ARM and the Basys3 with the software
+running on a MicroBlaze-V soft core processor are supported.
+
 ### Hardware Design with Vivado
 
 > Note: This step can be skipped if a pre-built XSA is downloaded from the releases section.
 > Place it in the vivado subfolder and continue with the [Vitis](#software-application-with-vitis) section.
 
 You can regenerate the project by starting Vivado and opening the tcl console.
-Navigate with `cd` into the vivado subfolder and run: `source regenerate.tcl`
+Navigate with `cd` into the vivado subfolder and either run
+`source regenerate_pynq_z2.tcl` or `source regenerate_basys3.tcl`.
 
 Vivado will rebuild the project from the source files. Once that's done you can
 generate the wrappers for the different block design implementations, synthesize
 and export the XSA files for use in Vitis.
 
 > Note: The automatic wrapper generation is not implemented for now.
-
-The board used in this project is a PYNQ-Z2 but any Zynq-7000 SoC with two PMOD headers can be used.
 
 ### Software Application with Vitis
 
@@ -173,10 +175,14 @@ and load the settings by running these commands based on your operating system:
 - Windows: `call C:/Xilinx/2025.1/Vitis/settings64.bat`
 - Linux: `source /opt/Xilinx/2025.1/Vitis/settings64.sh`
 
-In the same terminal navigate with `cd` into the vitis subfolder of this repository
-and run: `vitis -s regenerate.py`
+In the same terminal navigate with `cd` into the vitis subfolder and either run
+`vitis -s regenerate.py pynq-z2` or `vitis -s regenerate.py basys3`.
 
 > Note: This script has to be run from Vitis, it will not work with your local python installation.
+
+Unfortunetaly only later versions of Vitis support compilation settings through the
+Python API so some entries have to be manually configured for the Basys3 build which
+the script will warn you about when creating the Vitis project.
 
 The script takes care of several things:
 1. Performs sanity checks to see if the execution environment is correct and if the
@@ -200,8 +206,6 @@ the inner workings of the Game Boy and its cartridges and/or compiled existing i
 
 ## Todo-List
 
-- Port bare-metal app to MicroBlaze on a Basys3
-  - Update README.md and old path references
 - Clean up
 - Implement header checksum calculation in parse_header
 - Do the actual work in an IP-Core and communicate with PS instead of bitbanging
