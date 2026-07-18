@@ -45,10 +45,96 @@ They only report half as many banks present, but manually fixing them in the sof
 ## Quick Start
 
 This project was developed with Vivado/Vitis 2025.1 and uses scripts for these versions.
-It should be possible to recreate the projects with minimal hassle on older versions.
+It should be possible to recreate the projects with minimal hassle on different versions.
 
+### Reading and Writing Cartridges
+
+This step assumes you have your FPGA-board configured with the application up and running.
+
+Interfacing with the FPGA-board is done through python scripts by sending data over a serial port. Please refer to [Setting up the virutal environment](https://github.com/alpyen/fpga-mediaplayer/blob/main/docs/python.md#setting-up-the-virtual-environment) on how to create a virtual environment and install the pip packages (pyserial) to use the scripts.
+
+The board communicates with a baudrate of `115200` and is plugged in to `/dev/ttyUSB1` on my machine.
+Check if your setup is healthy by runing the help command:
+```console
+(.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 help
+Sending command: help
+Receiving data...482B/482B...done!
+ZYNQ GBCartReader - Read & Write Gameboy cartridges
+written by alpyen - visit the project on github.com/alpyen/zynq-gbcartreader
+
+Available commands:
+-------------------
+help          Display this help page
+parse header  Read cartridge header and parse into readable form
+read rom      Read cartridge rom and echo it in binary
+read ram      Read cartridge ram (if available) and echo it in binary
+write ram     Write cartridge ram (if available) from binary terminal data
+```
+
+A help screen should be printed which is sent by the applicaton running on the FPGA-board.
+If you do not receive any text or the connection hangs, make sure to correctly flash the board, and check your access permissions on that serial port.
+
+#### Reading Cartridges
+
+Plugging in a Pokémon Crystal cartridge (CGB-BYTD-NOE) I can read out its header:
+```console
+(.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 parse header
+Sending command: parse header
+Receiving data...851B/851B...done!
+Overview:
+  Entry Point:       00 C3 6E 01
+  Nintendo Logo:     Good
+  Title:             PM_CRYSTAL
+  Manufac. Code (?): BYTD
+  CGB Flag:          CGB exclusive
+  New Licensee Code: Nintendo Research & Development 1
+  SGB Flag:          No
+  Type:              MBC3 + RTC + RAM + Battery
+  ROM Size:          2048 KiB (128 banks)
+  RAM Size:          32 KiB (4 banks)
+  Destination Code:  Overseas
+  Old Licensee Code: Check New Licensee Code
+  Version:           00
+  Header Checksum:   28
+  Global Checksum:   49 82
+
+Full Header:
+  0x0100:  00 C3 6E 01 CE ED 66 66 CC 0D 00 0B 03 73 00 83
+  0x0110:  00 0C 00 0D 00 08 11 1F 88 89 00 0E DC CC 6E E6
+  0x0120:  DD DD D9 99 BB BB 67 63 6E 0E EC CC DD DC 99 9F
+  0x0130:  BB B9 33 3E 50 4D 5F 43 52 59 53 54 41 4C 00 42
+  0x0140:  59 54 44 C0 30 31 00 10 06 03 01 33 00 28 49 82
+```
+
+Now all you have do to dump this cartridge is to use the `read rom` function. The python script will
+output the contents onto `stdout` while printing the current progress onto `stderr`. Pipe the result
+into a file like so:
+```console
+(.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 read rom > cartridge.gb
+Sending command: read rom
+Receiving data...2048K/2048K...done!
+```
+
+The file extension does not really matter, it is recommended to simply use one that
+downstream tools like emulators or inspection tools can handle.
+
+Dumping the cartridge RAM is as straightforward, simply replace `read rom` with `read ram`.
+
+#### Writing Cartridges
+
+Use `write ram` and either pipe in the RAM file or redirect stdin like so:
+```
+(.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 write ram < cartridge.sav
+Sending command: read rom
+Receiving data...2048K/2048K...done!
+```
+
+> Note: Since RTC reads/writes are not implemented some games may ask you to re-set the clock.
 
 ### Vivado
+
+> Note: This step can be skipped if a pre-built XSA is downloaded from the releases section.
+> Place it in the vivado subfolder and continue with the Vitis Quick Start.
 
 You can regenerate the project by starting Vivado and opening the tcl console.
 Navigate with `cd` into the vivado subfolder and run: `source regenerate.tcl`
@@ -103,3 +189,4 @@ ___
 - Write Quick Start for reading/writing with the python script
 - Port bare-metal app to MicroBlaze on a Basys3
 - Clean up
+- Implement header checksum calculation in parse_header
