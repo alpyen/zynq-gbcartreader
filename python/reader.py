@@ -29,7 +29,7 @@ def die(message):
     log(message)
     exit(0)
 
-TRANSFER_TIMEOUT = 3
+TRANSFER_TIMEOUT = 5
 last_comm = time.time()
 
 # Waits until atleast n bytes are in our RX buffer.
@@ -112,7 +112,7 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
 
         while bytes_received != bytes_to_receive:
             # The contents of "help" and "parse header" may not be divisible by 64.
-            bytes_to_read = min(64, bytes_to_receive - bytes_received)
+            bytes_to_read = min(16, bytes_to_receive - bytes_received)
 
             wait_for_n_serial_bytes(bytes_to_read)
 
@@ -151,7 +151,7 @@ with serial.Serial(args.port, args.baudrate, bytesize=8, parity="N", stopbits=1)
         log("Sending data...", "")
 
         RAM_BANK_SIZE = 0x2000
-        BUFFER_CHUNK_SIZE = 64 # Zynq only has a 64 byte RX buffer
+        BUFFER_CHUNK_SIZE = 16 # Zynq has a RX buffer of 64 bytes but Basys3 UartLite only 16 bytes!
         bytes_sent = 0
 
         for i in range(buffer_length // BUFFER_CHUNK_SIZE):

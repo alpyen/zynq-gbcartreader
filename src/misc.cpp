@@ -1,9 +1,9 @@
 #include "misc.h"
 
-#include <xuartps.h>
 #include <xstatus.h>
 #include <cstdlib>
 
+#include "uart.h"
 #include "print.h"
 
 [[noreturn]] void die(const char* message)
@@ -23,7 +23,7 @@ void uart_readline(char* buffer, uint8_t buffer_size)
 
     while (true)
     {
-        char received = XUartPs_RecvByte(STDOUT_BASEADDRESS);
+        char received = Uart_RecvByte(STDOUT_BASEADDRESS);
         num_received++;
 
         // Transform to lower case for strcmp

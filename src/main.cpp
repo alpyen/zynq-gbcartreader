@@ -1,5 +1,4 @@
 #include "xparameters.h"
-#include <xuartps.h>
 
 #include "pmod.h"
 #include "cli_handlers.h"

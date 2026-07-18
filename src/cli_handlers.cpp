@@ -1,9 +1,9 @@
 #include "cli_handlers.h"
 
 #include <cstdint>
-#include <xuartps.h>
 #include <string.h>
 
+#include "uart.h"
 #include "cartridge.h"
 #include "misc.h"
 #include "print.h"
@@ -13,12 +13,12 @@
 
 inline static void __print_response_header(response_t code, uint32_t payload_size = 0)
 {
-    XUartPs_SendByte(STDOUT_BASEADDRESS, code);
+    Uart_SendByte(STDOUT_BASEADDRESS, code);
 
     if (payload_size > 0)
     {
         for (unsigned i = 0; i < 4; ++i)
-            XUartPs_SendByte(STDOUT_BASEADDRESS, (uint8_t)(payload_size >> (i * 8)));
+            Uart_SendByte(STDOUT_BASEADDRESS, (uint8_t)(payload_size >> (i * 8)));
     }
 }
 
@@ -248,7 +248,7 @@ void cli_read_rom()
         }
 
         for (unsigned address = 0; address < ROM_BANK_SIZE; ++address)
-            XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
+            Uart_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
     }
 }
 
@@ -295,7 +295,7 @@ void cli_read_ram()
         __print_response_header(response_t::OK, INTERNAL_RAM_SIZE);
 
         for (unsigned address = 0; address < INTERNAL_RAM_SIZE; ++address)
-            XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
+            Uart_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
 
         return;
     }
@@ -338,7 +338,7 @@ void cli_read_ram()
         }
 
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
-            XUartPs_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
+            Uart_SendByte(STDOUT_BASEADDRESS, cartridge_buffer[address]);
     }
 }
 
@@ -409,7 +409,7 @@ void cli_write_ram()
     // How many bytes wants the PC to write?
     uint32_t write_size = 0;
     for (int i = 0; i < 4; ++i)
-        write_size |= ((uint32_t)XUartPs_RecvByte(STDOUT_BASEADDRESS)) << (i * 8);
+        write_size |= ((uint32_t)Uart_RecvByte(STDOUT_BASEADDRESS)) << (i * 8);
 
     // Handle MBC2 separately as it as internal RAM.
     if (cartridge_type == cartridge_type::MBC2 || cartridge_type == cartridge_type::MBC2_BATTERY)
@@ -424,9 +424,9 @@ void cli_write_ram()
 
         for (unsigned address = 0; address < INTERNAL_RAM_SIZE; ++address)
         {
-            uint8_t byte = XUartPs_RecvByte(STDOUT_BASEADDRESS);
+            uint8_t byte = Uart_RecvByte(STDOUT_BASEADDRESS);
             cartridge_buffer[address] = byte;
-            XUartPs_SendByte(STDOUT_BASEADDRESS, byte);
+            Uart_SendByte(STDOUT_BASEADDRESS, byte);
         }
 
         mbc2::write_ram();
@@ -445,9 +445,9 @@ void cli_write_ram()
     {
         for (unsigned address = 0; address < RAM_BANK_SIZE; ++address)
         {
-            uint8_t byte = XUartPs_RecvByte(STDOUT_BASEADDRESS);
+            uint8_t byte = Uart_RecvByte(STDOUT_BASEADDRESS);
             cartridge_buffer[address] = byte;
-            XUartPs_SendByte(STDOUT_BASEADDRESS, byte);
+            Uart_SendByte(STDOUT_BASEADDRESS, byte);
         }
 
         write_func(bank);
