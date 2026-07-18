@@ -17,6 +17,19 @@ around with AXI interfaces.
 </div>
 
 
+## Navigation
+
+1. [Supported Cartridge Types](#supported-cartridge-types)
+2. [Reading and Writing Cartridges](#reading-and-writing-cartridges)
+   1. [Reading ROM / RAM](#reading-rom--ram)
+   2. [Writing RAM](#writing-ram)
+3. [Setting up the FPGA-board](#setting-up-the-fpga-board)
+   1. [Hardware Design with Vivado](#hardware-design-with-vivado)
+   2. [Software Application with Vitis](#software-application-with-vitis)
+4. [Acknowledgements](#acknowledgements)
+5. [Todo-List](#todo-list)
+
+
 ## Supported Cartridge Types
 
 There are a couple of different cartridge types that mostly distinguish between the type of
@@ -42,18 +55,15 @@ and also restore save files back to the cartridge. Reading and Writing RTC data 
 I've noted that some games can underreport the number of ROM or RAM banks, for example ポケットモンスター 緑 or ポケットモンスター クリスタルバージョン.
 They only report half as many banks present, but manually fixing them in the software dumps these correctly too.
 
-## Quick Start
 
-This project was developed with Vivado/Vitis 2025.1 and uses scripts for these versions.
-It should be possible to recreate the projects with minimal hassle on different versions.
-
-### Reading and Writing Cartridges
+## Reading and Writing Cartridges
 
 This step assumes you have your FPGA-board configured with the application up and running.
 
 Interfacing with the FPGA-board is done through python scripts by sending data over a serial port. Please refer to [Setting up the virutal environment](https://github.com/alpyen/fpga-mediaplayer/blob/main/docs/python.md#setting-up-the-virtual-environment) on how to create a virtual environment and install the pip packages (pyserial) to use the scripts.
 
 The board communicates with a baudrate of `115200` and is plugged in to `/dev/ttyUSB1` on my machine.
+
 Check if your setup is healthy by runing the help command:
 ```console
 (.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 help
@@ -74,7 +84,7 @@ write ram     Write cartridge ram (if available) from binary terminal data
 A help screen should be printed which is sent by the applicaton running on the FPGA-board.
 If you do not receive any text or the connection hangs, make sure to correctly flash the board, and check your access permissions on that serial port.
 
-#### Reading Cartridges
+### Reading ROM / RAM
 
 Plugging in a Pokémon Crystal cartridge (CGB-BYTD-NOE) I can read out its header:
 ```console
@@ -120,9 +130,9 @@ downstream tools like emulators or inspection tools can handle.
 
 Dumping the cartridge RAM is as straightforward, simply replace `read rom` with `read ram`.
 
-#### Writing Cartridges
+### Writing RAM
 
-Use `write ram` and either pipe in the RAM file or redirect stdin like so:
+Use `write ram` and either pipe in the RAM file or redirect `stdin` like so:
 ```
 (.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 write ram < cartridge.sav
 Sending command: read rom
@@ -131,10 +141,16 @@ Receiving data...2048K/2048K...done!
 
 > Note: Since RTC reads/writes are not implemented some games may ask you to re-set the clock.
 
-### Vivado
+
+## Setting up the FPGA-board
+
+This project was developed with Vivado/Vitis 2025.1 and uses scripts for these versions.
+It should be possible to recreate the projects with minimal hassle on different versions.
+
+### Hardware Design with Vivado
 
 > Note: This step can be skipped if a pre-built XSA is downloaded from the releases section.
-> Place it in the vivado subfolder and continue with the Vitis Quick Start.
+> Place it in the vivado subfolder and continue with the [Vitis](#software-application-with-vitis) section.
 
 You can regenerate the project by starting Vivado and opening the tcl console.
 Navigate with `cd` into the vivado subfolder and run: `source regenerate.tcl`
@@ -145,7 +161,9 @@ and export the XSA files for use in Vitis.
 
 > Note: The automatic wrapper generation is not implemented for now.
 
-### Vitis
+The board used in this project is a PYNQ-Z2 but any Zynq-7000 SoC with two PMOD headers can be used.
+
+### Software Application with Vitis
 
 Vitis offers a python interface to dispatch commands from scripts to the application.
 In order to use this, you need to source the settings64.sh from the Vitis installation.
@@ -172,9 +190,7 @@ Once the regeneration is complete you can open the Vitis GUI and set the workspa
 to the vitis subfolder. Now you're ready to build the applications and deploy them.
 
 
-___
-
-### Acknowledgements
+## Acknowledgements
 
 This project heavily relies on the work of others who have reverse engineered and documented
 the inner workings of the Game Boy and its cartridges and/or compiled existing information:
@@ -182,11 +198,9 @@ the inner workings of the Game Boy and its cartridges and/or compiled existing i
 - Game Boy: Complete Technical Reference - https://github.com/Gekkio/gb-ctr
 
 
-___
+## Todo-List
 
-### Todo-List
-
-- Write Quick Start for reading/writing with the python script
 - Port bare-metal app to MicroBlaze on a Basys3
 - Clean up
 - Implement header checksum calculation in parse_header
+- Do the actual work in an IP-Core and communicate with PS instead of bitbanging
