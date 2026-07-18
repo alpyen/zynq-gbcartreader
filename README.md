@@ -90,7 +90,7 @@ Plugging in a Pokémon Crystal cartridge (CGB-BYTD-NOE) I can read out its heade
 ```console
 (.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 parse header
 Sending command: parse header
-Receiving data...851B/851B...done!
+Receiving data...858B/858B...done!
 Overview:
   Entry Point:       00 C3 6E 01
   Nintendo Logo:     Good
@@ -105,7 +105,7 @@ Overview:
   Destination Code:  Overseas
   Old Licensee Code: Check New Licensee Code
   Version:           00
-  Header Checksum:   28
+  Header Checksum:   28 (Good)
   Global Checksum:   49 82
 
 Full Header:
@@ -207,6 +207,4 @@ the inner workings of the Game Boy and its cartridges and/or compiled existing i
 
 ## Todo-List
 
-- Clean up
-- Implement header checksum calculation in parse_header
 - Do the actual work in an IP-Core and communicate with PS instead of bitbanging

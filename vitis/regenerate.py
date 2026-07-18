@@ -130,7 +130,7 @@ else: # board == "basys3"
     print_warning("Vitis 2025.1 does not support setting compilation parameters through the Python API.")
     print_warning("Set the following parameters manually:")
     print_warning("  MicroBlaze-V stack and heap are too small. Change them to 0x2000 in the linker script.")
-    print_warning("  UartLite uses a different driver. Set the define UARTLITE in the application's UserConfig.cmake")
+    print_warning("  UartLite uses a different driver. Set the define UARTLITE in the application's UserConfig.cmake.")
 
 # -----------------------------------------------------------------------------
 

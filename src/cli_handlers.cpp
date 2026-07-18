@@ -162,7 +162,14 @@ void cli_parse_header()
     xil_sprintf(&header_string, "  Version:           %02x\r\n", header->rom_version);
 
 
-    xil_sprintf(&header_string, "  Header Checksum:   %02x\r\n", header->header_checksum);
+    uint8_t calculated_checksum = 0;
+    for (uint16_t address = 4 + 48; address < sizeof(cartridge_header) - 2 - 1; ++address)
+        calculated_checksum -= cartridge_buffer[HEADER_BASE_ADDRESS + address] + 1;
+
+    if (header->header_checksum == calculated_checksum)
+        xil_sprintf(&header_string, "  Header Checksum:   %02x (Good)\r\n", header->header_checksum);
+    else
+        xil_sprintf(&header_string, "  Header Checksum:   %02x (Bad, Actual=%02x)\r\n", header->header_checksum, calculated_checksum);
 
 
     xil_sprintf(
