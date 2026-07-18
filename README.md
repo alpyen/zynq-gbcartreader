@@ -135,8 +135,9 @@ Dumping the cartridge RAM is as straightforward, simply replace `read rom` with 
 Use `write ram` and either pipe in the RAM file or redirect `stdin` like so:
 ```
 (.venv) zynq-gbcartreader/python$ python reader.py -b 115200 -p /dev/ttyUSB1 write ram < cartridge.sav
-Sending command: read rom
-Receiving data...2048K/2048K...done!
+Sending command: write ram
+Sending size...done!
+Sending data...32K/32K...done!
 ```
 
 > Note: Since RTC reads/writes are not implemented some games may ask you to re-set the clock.
