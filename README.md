@@ -201,6 +201,7 @@ the inner workings of the Game Boy and its cartridges and/or compiled existing i
 ## Todo-List
 
 - Port bare-metal app to MicroBlaze on a Basys3
+  - Update README.md and old path references
 - Clean up
 - Implement header checksum calculation in parse_header
 - Do the actual work in an IP-Core and communicate with PS instead of bitbanging

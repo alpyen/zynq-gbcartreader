@@ -42,7 +42,7 @@ if pathlib.Path(".").absolute().name != "vitis":
 
 # Sanity check: Were the XSA files exported properly?
 xsa_exist = True
-xsa_files = ["sw_impl_wrapper.xsa"]
+xsa_files = ["pynq_z2_wrapper.xsa"]
 for xsa in xsa_files:
     if xsa not in os.listdir("../vivado"):
         print_error(f"\"{xsa}\" file not found in vivado subfolder. Export first!")
@@ -82,9 +82,9 @@ client.update_workspace(path=".")
 
 advanced_options = client.create_advanced_options_dict(dt_overlay="0")
 
-sw_impl_platform = client.create_platform_component(
-    name = "sw_impl_platform",
-    hw_design = "$COMPONENT_LOCATION/../../vivado/sw_impl_wrapper.xsa",
+pynq_z2_platform = client.create_platform_component(
+    name = "pynq_z2_platform",
+    hw_design = "$COMPONENT_LOCATION/../../vivado/pynq_z2_wrapper.xsa",
     os = "standalone",
     cpu = "ps7_cortexa9_0",
     domain_name = "standalone_ps7_cortexa9_0",
@@ -93,9 +93,9 @@ sw_impl_platform = client.create_platform_component(
     compiler = "gcc"
 )
 
-sw_impl_standalone_app = client.create_app_component(
-    name = "sw_impl_standalone_app",
-    platform = "$COMPONENT_LOCATION/../sw_impl_platform/export/sw_impl_platform/sw_impl_platform.xpfm",
+pynq_z2_application = client.create_app_component(
+    name = "pynq_z2_application",
+    platform = "$COMPONENT_LOCATION/../pynq_z2_platform/export/pynq_z2_platform/pynq_z2_platform.xpfm",
     domain = "standalone_ps7_cortexa9_0"
 )
 
@@ -104,8 +104,7 @@ sw_impl_standalone_app = client.create_app_component(
 # Link sources that are located outside the workspace directory
 print_info("Linking sources outside the workspace to the applications.")
 
-sw_impl_standalone_app.import_files("../src/sw_impl", ["*.cpp"], is_skip_copy_sources=True)
-sw_impl_standalone_app.import_files("../src", ["*.cpp"], is_skip_copy_sources=True)
+pynq_z2_application.import_files("../src", ["*.cpp"], is_skip_copy_sources=True)
 
 print_success("Regeneration complete. You can start Vitis and set the vitis subfolder as the workspace.")
 

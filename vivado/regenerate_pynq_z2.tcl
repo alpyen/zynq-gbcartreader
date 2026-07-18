@@ -18,7 +18,7 @@
 # NOTE: In order to use this script for source control purposes, please make sure that the
 #       following files are added to the source control system:-
 #
-# 1. This project restoration tcl script (regenerate.tcl) that was generated.
+# 1. This project restoration tcl script (regenerate_pynq_z2.tcl) that was generated.
 #
 # 2. The following source(s) files that were local or imported into the original project.
 #    (Please see the '$orig_proj_dir' and '$origin_dir' variable setting below at the start of the script)
@@ -27,7 +27,7 @@
 #
 # 3. The following remote source files that were added to the original project:-
 #
-#    "bd/sw_impl/sw_impl.bd"
+#    "bd/pynq_z2/pynq_z2.bd"
 #    "constraints/pynq-z2/pins.xdc"
 #    "constraints/pynq-z2/timing.xdc"
 #
@@ -37,7 +37,7 @@
 proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
- "[file normalize "$origin_dir/../bd/sw_impl/sw_impl.bd"]"\
+ "[file normalize "$origin_dir/../bd/pynq_z2/pynq_z2.bd"]"\
  "[file normalize "$origin_dir/../constraints/pynq-z2/pins.xdc"]"\
  "[file normalize "$origin_dir/../constraints/pynq-z2/timing.xdc"]"\
   ]
@@ -165,12 +165,12 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- [file normalize "${origin_dir}/../bd/sw_impl/sw_impl.bd"] \
+ [file normalize "${origin_dir}/../bd/pynq_z2/pynq_z2.bd"] \
 ]
 add_files -norecurse -fileset $obj $files
 
 # Set 'sources_1' fileset file properties for remote files
-set file "$origin_dir/../bd/sw_impl/sw_impl.bd"
+set file "$origin_dir/../bd/pynq_z2/pynq_z2.bd"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "registered_with_manager" -value "1" -objects $file_obj

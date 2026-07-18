@@ -1,10 +1,22 @@
-#include "standalone.h"
+#include "misc.h"
 
 #include <xuartps.h>
-#include "common.h"
+#include <xstatus.h>
+#include <cstdlib>
 
-/* NOTE: This function fills up the buffer and overwrites only the last character
-         if more arrive than the buffer can handle. It breaks upon receciving '\r'. */
+#include "print.h"
+
+[[noreturn]] void die(const char* message)
+{
+    xil_printf("%s%s", message, "Critical Failure - Exiting Application!\r\n");
+    exit(XST_FAILURE);
+}
+
+bool is_printable(const char letter)
+{
+    return (letter >= 0x20) && (letter <= 0x7e);
+}
+
 void uart_readline(char* buffer, uint8_t buffer_size)
 {
     uint8_t num_received = 0;

@@ -53,7 +53,7 @@ parser = argparse.ArgumentParser(
     prog="reader",
     description=
         "Dispatches serial commmands to the board on a given port and baudrate as 8N1.\r\n"
-        "Use this tool with the standalone implementations of the ZYNQ GBCartReader.",
+        "Use this tool with the bare-metal application of the ZYNQ GBCartReader.",
     formatter_class=argparse.RawTextHelpFormatter
 )
 parser.add_argument("-p", "--port", type=str, required=True, help="Serial port the board is connected to")

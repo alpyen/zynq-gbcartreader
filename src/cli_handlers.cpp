@@ -5,8 +5,8 @@
 #include <string.h>
 
 #include "cartridge.h"
-#include "../common.h"
-#include "../print.h"
+#include "misc.h"
+#include "print.h"
 
 // TODO: Implement timeout of 3s?
 // TODO: Call virtual printf so platform agnostic? (Zynq/Arduino)

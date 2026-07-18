@@ -3,7 +3,7 @@
     "design_info": {
       "boundary_crc": "0xFA248B4A69E415C",
       "device": "xc7z020clg400-1",
-      "name": "sw_impl",
+      "name": "pynq_z2",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
       "tool_version": "2025.1",
@@ -214,8 +214,8 @@
       "processing_system7_0": {
         "vlnv": "xilinx.com:ip:processing_system7:5.5",
         "ip_revision": "7",
-        "xci_name": "sw_impl_processing_system7_0_0",
-        "xci_path": "ip/sw_impl_processing_system7_0_0/sw_impl_processing_system7_0_0.xci",
+        "xci_name": "pynq_z2_processing_system7_0_0",
+        "xci_path": "ip/pynq_z2_processing_system7_0_0/pynq_z2_processing_system7_0_0.xci",
         "inst_hier_path": "processing_system7_0",
         "has_run_ip_tcl": "true",
         "parameters": {
@@ -1938,8 +1938,8 @@
       "axi_pmod_gpio": {
         "vlnv": "xilinx.com:ip:axi_gpio:2.0",
         "ip_revision": "37",
-        "xci_name": "sw_impl_axi_pmod_gpio_0",
-        "xci_path": "ip/sw_impl_axi_pmod_gpio_0_2/sw_impl_axi_pmod_gpio_0.xci",
+        "xci_name": "pynq_z2_axi_pmod_gpio_0",
+        "xci_path": "ip/pynq_z2_axi_pmod_gpio_0/pynq_z2_axi_pmod_gpio_0.xci",
         "inst_hier_path": "axi_pmod_gpio",
         "has_run_ip_tcl": "true",
         "parameters": {
@@ -1957,8 +1957,8 @@
       "axi_smc": {
         "vlnv": "xilinx.com:ip:smartconnect:1.0",
         "ip_revision": "27",
-        "xci_name": "sw_impl_axi_smc_0",
-        "xci_path": "ip/sw_impl_axi_smc_0/sw_impl_axi_smc_0.xci",
+        "xci_name": "pynq_z2_axi_smc_0",
+        "xci_path": "ip/pynq_z2_axi_smc_0/pynq_z2_axi_smc_0.xci",
         "inst_hier_path": "axi_smc",
         "has_run_ip_tcl": "true",
         "parameters": {
@@ -2029,8 +2029,8 @@
       "rst_ps7_0_100M": {
         "vlnv": "xilinx.com:ip:proc_sys_reset:5.0",
         "ip_revision": "17",
-        "xci_name": "sw_impl_rst_ps7_0_100M_0",
-        "xci_path": "ip/sw_impl_rst_ps7_0_100M_0/sw_impl_rst_ps7_0_100M_0.xci",
+        "xci_name": "pynq_z2_rst_ps7_0_100M_0",
+        "xci_path": "ip/pynq_z2_rst_ps7_0_100M_0/pynq_z2_rst_ps7_0_100M_0.xci",
         "inst_hier_path": "rst_ps7_0_100M",
         "has_run_ip_tcl": "true"
       }

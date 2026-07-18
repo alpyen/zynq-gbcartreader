@@ -3,9 +3,8 @@
 
 #include "pmod.h"
 #include "cli_handlers.h"
-#include "../common.h"
-#include "../standalone.h"
-#include "../print.h"
+#include "misc.h"
+#include "print.h"
 
 #include <string.h>
 
@@ -28,6 +27,8 @@ int main()
 
     while (true)
     {
+        /* NOTE: This function fills up the buffer and overwrites only the last character
+         if more arrive than the buffer can handle. It breaks upon receciving '\r'. */
         uart_readline(line_buffer, sizeof(line_buffer));
 
         bool valid_command = false;
